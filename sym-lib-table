@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "PICO_W")(type "KiCad")(uri "${KIPRJMOD}/PICO_W.kicad_sym")(options "")(descr ""))
+  (lib (name "ar1021")(type "KiCad")(uri "${KIPRJMOD}/symbols/ar1021.kicad_sym")(options "")(descr ""))
+)
