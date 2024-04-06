@@ -408,6 +408,7 @@
 		)
 	)
 	(footprint "logo:happyface_smaller"
+		(locked yes)
 		(layer "F.Cu")
 		(uuid "5367c675-1c61-4917-a5e6-5f00e065eed5")
 		(at 196.8 122.9)
@@ -7736,6 +7737,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0805_2012Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "0915bb09-211c-4b28-a985-439c8744e397")
 		(at 155.9 124.7 180)
@@ -13746,6 +13748,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "6f9bd1de-7263-49f5-91aa-bd9cefb02b8a")
 		(at 151.2 121.2)
@@ -13962,6 +13965,7 @@
 		)
 	)
 	(footprint "Diode_SMD:D_SOD-523"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "71387026-c9c8-4b84-a32d-a777fb69a2b0")
 		(at 199.4 90.9)
@@ -15162,6 +15166,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "7903eda3-c483-4b25-928a-cc28592c1fb3")
 		(at 150.7 119.82 -90)
@@ -15378,6 +15383,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "7cc14526-a2be-4a93-b164-cd5feec49baa")
 		(at 149.8 118.2)
@@ -16732,6 +16738,7 @@
 		)
 	)
 	(footprint "Diode_SMD:D_SOD-523"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "88b49a3d-565a-483a-bf7f-44f6ace39732")
 		(at 169 115)
@@ -17598,6 +17605,7 @@
 		)
 	)
 	(footprint "Diode_SMD:D_SOD-523"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "979e9bc2-854a-46bf-8028-e1c7dac75108")
 		(at 199.4 89.5)
@@ -19354,6 +19362,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0603_1608Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "a4d462d5-8f76-4860-a977-c2d1268bda6d")
 		(at 152.7 124.7 180)
@@ -20070,6 +20079,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0603_1608Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "a9dd5719-5bbb-472b-85c3-5ce38a6232af")
 		(at 138.8 91.8 180)
@@ -20702,6 +20712,7 @@
 		)
 	)
 	(footprint "Resistor_SMD:R_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "b0bf8d88-1380-45c5-b584-1278166ea567")
 		(at 151.2 122.2)
@@ -23271,6 +23282,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0603_1608Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "cb320ba2-4144-4189-be0f-62995e0b9df4")
 		(at 152.2 119.2 -90)
@@ -23915,6 +23927,7 @@
 		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "d284c78b-af54-4391-85de-52ce618e5419")
 		(at 150.7 124.6 90)
@@ -24131,6 +24144,7 @@
 		)
 	)
 	(footprint "Resistor_SMD:R_0402_1005Metric"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "dc1f7741-5309-4a78-9a12-6ad77d9f4ac2")
 		(at 151.2 123.2)
@@ -27613,6 +27627,7 @@
 		)
 	)
 	(footprint "Diode_SMD:D_SOD-523"
+		(locked yes)
 		(layer "B.Cu")
 		(uuid "f31a5e4a-c480-46ff-ae6e-059bd08c6908")
 		(at 169 112.9)
