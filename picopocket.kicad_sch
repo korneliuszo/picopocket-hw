@@ -29283,7 +29283,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm"
+		(property "Footprint" "Package_SO:SSOP-20_5.3x7.2mm_P0.65mm"
 			(at 356.87 175.26 0)
 			(effects
 				(font
