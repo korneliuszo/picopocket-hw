@@ -18150,6 +18150,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C840096"
+			(at 213.36 240.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "fe4276fc-35db-4c60-a3bf-0c9aa699e1d4")
 		)
@@ -18286,6 +18295,15 @@
 			)
 		)
 		(property "Description" "quad 2-input NOR gate"
+			(at 212.09 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C75069"
 			(at 212.09 109.22 0)
 			(effects
 				(font
@@ -18588,6 +18606,15 @@
 			)
 		)
 		(property "Description" "Quad 2-input OR"
+			(at 237.49 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C352974"
 			(at 237.49 86.36 0)
 			(effects
 				(font
@@ -19167,6 +19194,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C1713"
+			(at 324.485 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "98a15265-f8f1-44db-853d-1faa94031ddd")
 		)
@@ -19637,6 +19673,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C376807"
+			(at 394.97 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "b145ae67-ceaf-422e-aff8-bd538f90b89b")
 		)
@@ -19699,6 +19744,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 97.79 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C176119"
 			(at 97.79 39.37 0)
 			(effects
 				(font
@@ -20107,6 +20161,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C352974"
+			(at 237.49 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "718ffb43-87ca-49b5-995f-26436666f982")
 		)
@@ -20205,6 +20268,15 @@
 			)
 		)
 		(property "Description" "Quad 2-input OR"
+			(at 273.05 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C352974"
 			(at 273.05 139.7 0)
 			(effects
 				(font
@@ -20449,6 +20521,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C434068"
+			(at 186.69 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "efd8430e-8fa9-4e1b-9fe6-cc330954acb0")
 		)
@@ -20517,6 +20598,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 368.3 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C3015779"
 			(at 368.3 31.75 0)
 			(effects
 				(font
@@ -20659,6 +20749,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C75069"
+			(at 212.09 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "13"
 			(uuid "2a97a234-9097-4d4a-9945-59647a9adc8e")
 		)
@@ -20763,6 +20862,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C124102"
+			(at 347.98 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "bbce4bb5-bb2e-49a9-b42e-4606eb9212bf")
 		)
@@ -20822,6 +20930,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 379.095 26.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C107082"
 			(at 379.095 26.67 0)
 			(effects
 				(font
@@ -21095,6 +21212,15 @@
 			)
 		)
 		(property "Description" "50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"
+			(at 166.37 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5337205"
 			(at 166.37 36.83 0)
 			(effects
 				(font
@@ -21443,6 +21569,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C3152105"
+			(at 146.05 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "5fbadc91-f2cf-44d5-8d9a-df775f846ef5")
 		)
@@ -21463,7 +21598,7 @@
 		(at 267.97 90.17 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -21776,6 +21911,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 195.58 204.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "dea86d96-dd6e-49b9-a3ab-a3c2a15d3dd3")
 		)
@@ -21838,6 +21982,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 173.99 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 173.99 99.06 0)
 			(effects
 				(font
@@ -22182,6 +22335,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5337205"
+			(at 118.11 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "51e614c9-5c2d-475c-a04e-4a0a12ad0622")
 		)
@@ -22517,6 +22679,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C840103"
+			(at 213.36 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "bf39275a-21a9-46f7-bcc1-61b872b5e391")
 		)
@@ -22585,6 +22756,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 87.63 196.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 87.63 196.85 0)
 			(effects
 				(font
@@ -22927,6 +23107,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C3152105"
+			(at 396.24 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3e02e551-2a0d-497a-9c59-8f3f87e8dfd7")
 		)
@@ -22989,6 +23178,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 193.04 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 193.04 25.4 0)
 			(effects
 				(font
@@ -23084,7 +23282,7 @@
 		(at 38.1 72.39 180)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "52a465e6-0116-4ab9-95f4-88fac328ccba")
@@ -23565,6 +23763,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C3015779"
+			(at 368.3 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2228c023-a1b7-4f6f-bcdd-7e90b43d368a")
 		)
@@ -23635,7 +23842,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C103904"
+		(property "MPN" "C176119"
 			(at 162.56 113.03 0)
 			(effects
 				(font
@@ -23772,6 +23979,15 @@
 			)
 		)
 		(property "Description" "ESD Protection Diode, SOD-523"
+			(at 31.75 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C475685"
 			(at 31.75 149.86 0)
 			(effects
 				(font
@@ -24263,7 +24479,7 @@
 		(at 403.86 30.48 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "6b109d32-d170-4315-bbe0-d430b7c74675")
@@ -24452,6 +24668,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475685"
+			(at 106.68 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "74a69e2f-4faa-4974-b3a9-e65c99a8f917")
 		)
@@ -24513,6 +24738,15 @@
 			)
 		)
 		(property "Description" "ESD Protection Diode, SOD-523"
+			(at 36.83 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C475684"
 			(at 36.83 182.88 0)
 			(effects
 				(font
@@ -24790,6 +25024,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 38.1 273.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "16ef0795-9f26-4d17-b5ae-ab54cb2682ee")
 		)
@@ -24925,6 +25168,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475684"
+			(at 68.58 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "c5fe8881-5f56-4905-a780-cca7999c68c0")
 		)
@@ -24984,6 +25236,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 320.04 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C361203"
 			(at 320.04 29.21 0)
 			(effects
 				(font
@@ -25191,6 +25452,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C444884"
+			(at 391.16 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "50235165-bedd-453c-98bc-b45ab50dc367")
 		)
@@ -25327,6 +25597,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C385032"
+			(at 365.76 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8c9505f0-f383-4a24-ae8b-2e748c982ac0")
 		)
@@ -25389,6 +25668,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 331.47 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 331.47 139.7 0)
 			(effects
 				(font
@@ -25666,6 +25954,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C75069"
+			(at 212.09 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "13"
 			(uuid "2a97a234-9097-4d4a-9945-59647a9adc8f")
 		)
@@ -25836,6 +26133,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C352974"
+			(at 252.73 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "718ffb43-87ca-49b5-995f-26436666f984")
 		)
@@ -25934,6 +26240,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 195.58 229.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 195.58 229.87 0)
 			(effects
 				(font
@@ -26070,6 +26385,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 198.12 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 198.12 176.53 0)
 			(effects
 				(font
@@ -26277,6 +26601,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C75069"
+			(at 212.09 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "13"
 			(uuid "2a97a234-9097-4d4a-9945-59647a9adc90")
 		)
@@ -26346,7 +26679,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "APS6404L-3SQR-SN"
+		(property "Value" "LY68L6400SLIT"
 			(at 228.6 29.845 0)
 			(effects
 				(font
@@ -26374,6 +26707,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 209.55 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C261881"
 			(at 209.55 41.91 0)
 			(effects
 				(font
@@ -26666,6 +27008,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475685"
+			(at 41.91 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "8307d274-1da8-49da-9046-f98adb16cb13")
 		)
@@ -26937,7 +27288,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C103904"
+		(property "MPN" "C163811"
 			(at 274.32 223.52 0)
 			(effects
 				(font
@@ -27148,7 +27499,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C103904"
+		(property "MPN" "C163811"
 			(at 280.67 223.52 0)
 			(effects
 				(font
@@ -27219,6 +27570,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 106.68 237.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C6082"
 			(at 106.68 237.49 0)
 			(effects
 				(font
@@ -27407,6 +27767,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 367.03 179.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C3017501"
 			(at 367.03 179.07 0)
 			(effects
 				(font
@@ -27683,6 +28052,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C840096"
+			(at 213.36 214.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "e58f55a3-f4cf-4ace-ba89-a25fc9bbb723")
 		)
@@ -27752,6 +28130,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 391.16 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C444884"
 			(at 391.16 27.94 0)
 			(effects
 				(font
@@ -27830,7 +28217,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C103904"
+		(property "MPN" "C163811"
 			(at 233.68 182.88 0)
 			(effects
 				(font
@@ -27901,6 +28288,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 171.45 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 171.45 127 0)
 			(effects
 				(font
@@ -28112,6 +28508,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C6082"
+			(at 106.68 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "b7cd0002-7d33-430f-9a13-12181c286caa")
 		)
@@ -28303,6 +28708,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C176119"
+			(at 146.05 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3ffc690b-76fb-42d5-a0cc-722899ca5498")
 		)
@@ -28362,6 +28776,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 379.095 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C107082"
 			(at 379.095 34.29 0)
 			(effects
 				(font
@@ -28705,6 +29128,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 87.63 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "8aa02a22-787b-4d65-a304-816779898ca8")
 		)
@@ -28767,6 +29199,15 @@
 			)
 		)
 		(property "Description" "Resistor"
+			(at 168.91 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C163811"
 			(at 168.91 27.94 0)
 			(effects
 				(font
@@ -29176,6 +29617,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C3152105"
+			(at 97.79 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "95cda2e0-a661-469f-a03d-f9d70d39d179")
 		)
@@ -29253,6 +29703,15 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C220291"
+			(at 367.03 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 				(hide yes)
 			)
 		)
@@ -29377,6 +29836,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C361203"
+			(at 368.3 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7e041a3f-6ca8-4add-8663-4895301c1508")
 		)
@@ -29436,6 +29904,15 @@
 			)
 		)
 		(property "Description" "Resistor, small symbol"
+			(at 396.24 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C3152105"
 			(at 396.24 33.02 0)
 			(effects
 				(font
@@ -29582,6 +30059,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475684"
+			(at 77.47 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "b48b85ce-c9ae-46b5-ab84-16b823f2f40e")
 		)
@@ -29649,6 +30135,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C361203"
+			(at 311.15 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b0491830-d4a2-45b2-ad69-39c9f9007215")
 		)
@@ -29669,7 +30164,7 @@
 		(at 387.35 129.54 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -30189,6 +30684,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 260.35 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "adb3a38d-9b40-4c73-8518-79d4f0765c4f")
 		)
@@ -30251,6 +30755,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
+			(at 384.81 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C376807"
 			(at 384.81 182.88 0)
 			(effects
 				(font
@@ -30595,6 +31108,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475685"
+			(at 154.94 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "d8a484da-4d92-40da-a36e-0cc1c46f7498")
 		)
@@ -30928,6 +31450,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C124102"
+			(at 366.395 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f210760a-1449-4e00-acd9-585a2144c67d")
 		)
@@ -31189,6 +31720,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 198.12 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 198.12 151.13 0)
 			(effects
 				(font
@@ -31664,6 +32204,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C475685"
+			(at 36.83 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "81c1ee88-ae4d-42d1-babf-aab459c86ca2")
 		)
@@ -31920,6 +32469,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 315.595 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C361203"
 			(at 315.595 29.21 0)
 			(effects
 				(font
@@ -32331,6 +32889,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 359.41 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "ff565369-c031-4f29-a57f-389a81ab1dac")
 		)
@@ -32393,6 +32960,15 @@
 			)
 		)
 		(property "Description" "ESD Protection Diode, SOD-523"
+			(at 41.91 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C475684"
 			(at 41.91 182.88 0)
 			(effects
 				(font
@@ -32538,6 +33114,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C385032"
+			(at 365.76 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7ef68935-f32c-4d0c-8eff-953ec032a387")
 		)
@@ -32608,7 +33193,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "C103904"
+		(property "MPN" "C163811"
 			(at 267.97 223.52 0)
 			(effects
 				(font
@@ -32745,6 +33330,15 @@
 			)
 		)
 		(property "Description" ""
+			(at 353.06 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C131154"
 			(at 353.06 39.37 0)
 			(effects
 				(font
@@ -32945,6 +33539,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C6082"
+			(at 50.8 237.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "4"
 			(uuid "fdde8daa-4fab-4d38-9e19-f996701c52e0")
 		)
@@ -33134,6 +33737,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C5142565"
+			(at 93.98 273.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "30345725-aa54-4fd7-a6eb-a5499dfa7e66")
 		)
@@ -33196,6 +33808,15 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 292.1 168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C5142565"
 			(at 292.1 168.91 0)
 			(effects
 				(font
@@ -33474,6 +34095,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C60434"
+			(at 311.15 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "13"
 			(uuid "ada66c2e-0d72-49fe-b17b-91c2b78b1e0d")
 		)
@@ -33578,6 +34208,15 @@
 			)
 		)
 		(property "Description" "2 to 4 Decoder, Low-Voltage CMOS"
+			(at 311.15 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C153798"
 			(at 311.15 139.7 0)
 			(effects
 				(font
@@ -33738,6 +34377,15 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "C460517"
+			(at 186.69 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "3"
 			(uuid "c139225c-7ce7-40c3-a10b-faa2ae2864b0")
 		)
@@ -33870,6 +34518,15 @@
 			)
 		)
 		(property "Description" "quad 2-input NOR gate"
+			(at 212.09 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "C75069"
 			(at 212.09 78.74 0)
 			(effects
 				(font
