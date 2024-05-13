@@ -30,11 +30,11 @@ wrapper:
 //	irq clear 4                 side OPERATION_CONTROL_A19_A16
 	// jump if dma
 	jmp pin dma                 side OPERATION_CONTROL_A19_A16     [1]
-	in pins, 8                  side OPERATION_CONTROL_A19_A16  // [1]
+	in pins, 8                  side OPERATION_A15_A8              [1]
 	nop                         side OPERATION_A15_A8              [1]
-	in pins, 8                  side OPERATION_A15_A8           // [1]
+	in pins, 8                  side OPERATION_A7_A0               [1]
 	nop                         side OPERATION_A7_A0               [1]
-	in pins, 8                  side OPERATION_A7_A0            // [1]
+	in pins, 8                  side OPERATION_DATA                [1]
 	nop                         side OPERATION_DATA                [1]
 	in pins, 8                  side OPERATION_DATA
 	out X, 8                    side OPERATION_DATA
@@ -96,7 +96,7 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	//                                         | |       /- 74lvc139 Tpd 
 	//                                         | |       |      /- max (74lvc245 Ten, SN74CB3T3245 Ten)
 	//                                         | |       |      |         10ns            8ns
-	float div = ((float)(clock_get_hz(clk_sys)/2*2))*(7.0e-9+10.e-9);
+	float div = ((float)(clock_get_hz(clk_sys)/4*2))*(7.0e-9+10.e-9);
 
 	for (int i = PIN_AD0; i < PIN_AD0 + 8; i++) {
 		pio_gpio_init(isa_pio, i);    // Link the PIN to this PIO (All SM !)
