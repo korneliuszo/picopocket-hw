@@ -1,0 +1,14 @@
+format dos debug dwarf all
+opt nofarcalls, map, verbose, statics, symfile
+opt START=entry, DOSSEG
+output RAW offset=0x00000
+order
+clname CODE segaddr=0x0000 offset=0x0000
+clname DATA
+
+libpath %WATCOM%/lib286
+libpath %WATCOM%/lib286/dos
+file init.obj
+file main.obj
+file print.obj
+library clibs.lib

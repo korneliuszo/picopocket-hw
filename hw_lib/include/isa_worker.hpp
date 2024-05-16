@@ -4,9 +4,9 @@
  *  Created on: Jan 6, 2024
  *      Author: kosa
  */
+#pragma once
 
-#ifndef FW_ISA_WORKER_HPP_
-#define FW_ISA_WORKER_HPP_
+#include <stdint.h>
 
 void ISA_Pre_Init();
 void ISA_Init();
@@ -31,8 +31,3 @@ bool add_device(const Device & device);
 void ISA_Start();
 uint8_t IRQ_Create_Handle(uint8_t irq);
 void IRQ_Set(uint8_t irqh, bool val);
-
-
-
-
-#endif /* FW_ISA_WORKER_HPP_ */

@@ -17,6 +17,8 @@ pico_sdk_init()
 
 add_subdirectory(hw_lib)
 
+add_subdirectory(jmpcoro_lib)
+
 if(PROJECT_IS_TOP_LEVEL)
   add_subdirectory(test_fw)
 endif()
