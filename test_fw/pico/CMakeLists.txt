@@ -1,4 +1,21 @@
 add_library(test_tusb INTERFACE)
+
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/banner.o
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND ${CMAKE_LINKER} -r -b binary -o ${CMAKE_CURRENT_BINARY_DIR}/banner.o banner.bin
+	#places in data
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/banner.bin
+)
+
+add_custom_target(banner_obj DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/banner.o)
+
+
+add_library(banner OBJECT IMPORTED GLOBAL)
+add_dependencies(banner banner_obj)
+set_target_properties(banner PROPERTIES
+  IMPORTED_OBJECTS "${CMAKE_CURRENT_BINARY_DIR}/banner.o")
+
 target_include_directories(test_tusb INTERFACE tusb)
 
 add_executable(test
@@ -21,5 +38,6 @@ target_link_libraries(test PRIVATE
 	tinyusb_device
 	tinyusb_board
 	optionrom
+	banner
 	jmpcoro
 )

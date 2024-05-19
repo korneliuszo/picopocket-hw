@@ -1,4 +1,5 @@
 #include "isa_worker.hpp"
+#include "hardware/dma.h"
 #include <string.h>
 #include "testd.hpp"
 
@@ -6,6 +7,10 @@
 
 extern "C" const uint8_t _binary_optionrom_bin_start[];
 extern "C" const uint8_t _binary_optionrom_bin_size[];
+
+extern "C" const uint8_t _binary_banner_bin_start[];
+extern "C" const uint8_t _binary_banner_bin_size[];
+
 
 static uint32_t read_fn(void* obj, uint32_t faddr)
 {
@@ -18,6 +23,8 @@ static void nop_wrfn(void* obj, uint32_t faddr, uint8_t data) {}
 
 
 volatile uint8_t phase = 0x00;
+volatile uint8_t io_reg = 0x00;
+
 
 static uint32_t io_rdfn(void* obj, uint32_t faddr)
 {
@@ -26,6 +33,10 @@ static uint32_t io_rdfn(void* obj, uint32_t faddr)
 	case 0:
 	{
 		return phase;
+	}
+	case 1:
+	{
+		return io_reg;
 	}
 	default:
 		return 0xff;
@@ -38,6 +49,11 @@ static void io_wrfn(void* obj, uint32_t faddr, uint8_t data)
 	case 0:
 	{
 		phase = data;
+		return;
+	}
+	case 1:
+	{
+		io_reg = data;
 		return;
 	}
 	default:
@@ -56,6 +72,8 @@ static void start_new_phase(uint8_t * phase_cntr)
 	*phase_cntr+=1;
 	phase = *phase_cntr;
 }
+
+volatile uint8_t rx_buff[7*80*2];
 
 static void testd_task(Thread * thread)
 {
@@ -78,8 +96,33 @@ static void testd_task(Thread * thread)
 
 	uint8_t phase_cntr = 0;
 
-	wait_for_phase_passed(thread,&phase_cntr);
-	start_new_phase(&phase_cntr);
+	wait_for_phase_passed(thread,&phase_cntr); // 01 boot passed
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // DMA TEST
+
+	//prepare write DMA
+    uint dma_chan = 0;
+    SetupSingleTransferTXDMA(0,(uint8_t*)_binary_banner_bin_start,(size_t)_binary_banner_bin_size);
+	start_new_phase(&phase_cntr); // continue work on 386
+	// DMA Transfer
+	wait_for_phase_passed(thread,&phase_cntr); // DMA done
+	io_reg = TC_Triggered();
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // TC info displayed
+    SetupSingleTransferRXDMA(0,rx_buff,sizeof(rx_buff));
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // DMA started
+	while(!TC_Triggered())
+	{
+		thread->yield();
+	}
+	while(dma_channel_is_busy(0))
+	{
+		thread->yield();
+	}
+	io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,sizeof(rx_buff)));
+	start_new_phase(&phase_cntr); // continue work on 386
+
 
 	while(1)
 		thread->yield();
