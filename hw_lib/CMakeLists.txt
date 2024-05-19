@@ -10,6 +10,7 @@ target_link_libraries(isa_worker
 	PUBLIC 
 		hardware_pio
 		hardware_clocks
+		hardware_dma
 		pico_multicore
 		pico_stdio_semihosting
 		pico_stdlib

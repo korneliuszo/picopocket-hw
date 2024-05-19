@@ -49,15 +49,15 @@ rd:
 	jmp wait_for_exec           side OPERATION_DATA_PAUSE
 dma:
 	// DMA PROC
-	irq 7                  //no side
-	wait 1 irq 5           //no side
+	irq clear 7            //no side
+	irq wait 5             //no side
 .wrap
 
 .program dma_helper
 .side_set 3 opt
 
 .wrap_target
-	wait 1 IRQ 7           //no side
+	irq wait 7             //no side
 	// could be pause here to be safe on fifo not ready
 	jmp pin rd                  side OPERATION_CONTROL_A19_A16  // [1] // we check RD pin
 	nop                         side OPERATION_DATA             // [1]
@@ -67,7 +67,7 @@ rd:
 	irq clear 6                 side OPERATION_DATA
 	out pins, 8                 side OPERATION_DATA
 common:
-	irq 5                       side OPERATION_DATA
+	irq clear 5                 side OPERATION_DATA
 .wrap
 
 

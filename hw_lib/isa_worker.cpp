@@ -7,6 +7,8 @@
 
 #include "hardware/structs/sio.h"
 #include "hardware/pio.h"
+#include "hardware/gpio.h"
+#include "hardware/dma.h"
 #include "pico/multicore.h"
 #include <array>
 #include <cstring>
@@ -19,13 +21,22 @@
 
 constexpr uint isa_bus_sm = 0;            // Warning : HardCoded ISA State Machine number for speed
 
+constexpr uint TC_PIN = 10;
+constexpr uint DRQ_PIN = 19;
+
 [[gnu::section(".core1")]] volatile uint8_t mem_map[1024*1024/2048]; //2kB resolution - bitfield
 [[gnu::section(".core1")]] volatile uint8_t io_map[64*1024/8]; //8 IO regs resolution
+
+volatile bool dma_single_transfer;
 
 void ISA_Pre_Init()
 {
 	// ************ Pico I/O Pin Initialisation ****************
 	// * Put the I/O in a correct state to avoid PC Crash      *
+
+	gpio_init(DRQ_PIN);
+	gpio_put(DRQ_PIN, 0);
+	gpio_set_dir(DRQ_PIN,true);
 
 	//TODO: IRQ
 
@@ -33,8 +44,75 @@ void ISA_Pre_Init()
 	memset((void*)io_map,0,sizeof(io_map));
 }
 
+volatile bool TC_triggered_val;
+
+static void TC_trigger_IRQ(void)
+{
+    if (gpio_get_irq_event_mask(TC_PIN)) {
+       gpio_acknowledge_irq(TC_PIN, GPIO_IRQ_EDGE_RISE);
+       if(dma_single_transfer)
+    	   gpio_put(DRQ_PIN, 0); // we assume transfer only ends from PC side
+       TC_triggered_val = true;
+    }
+}
+
+bool TC_Triggered()
+{
+	if(TC_triggered_val)
+	{
+		TC_triggered_val = false;
+		return true;
+	}
+	return false;
+}
+
+void SetupSingleTransferTXDMA(uint dma_chan, const volatile uint8_t * buff, size_t len)
+{
+    dma_channel_config c = dma_channel_get_default_config(dma_chan);
+    channel_config_set_read_increment(&c, true);
+    channel_config_set_write_increment(&c, false);
+    channel_config_set_dreq(&c, pio_get_dreq(pio0, 1, true));
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
+
+    dma_channel_configure(dma_chan, &c,
+    	&pio0->txf[1],      // Destination pointer
+		buff,               // Source pointer
+        len,                // Number of transfers
+        true                // Start immediately
+    );
+
+    dma_single_transfer = true;
+	TC_triggered_val = false;
+    gpio_put(DRQ_PIN, 1);
+}
+
+void SetupSingleTransferRXDMA(uint dma_chan, volatile uint8_t * buff, size_t len)
+{
+    dma_channel_config c = dma_channel_get_default_config(dma_chan);
+    channel_config_set_read_increment(&c, false);
+    channel_config_set_write_increment(&c, true);
+    channel_config_set_dreq(&c, pio_get_dreq(pio0, 1, false));
+    channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
+
+    dma_channel_configure(dma_chan, &c,
+    	buff,               // Destination pointer
+		&pio0->rxf[1],      // Source pointer
+        len,                // Number of transfers
+        true                // Start immediately
+    );
+
+    dma_single_transfer = true;
+	TC_triggered_val = false;
+    gpio_put(DRQ_PIN, 1);
+}
+
 void ISA_Init()
 {
+	//TC line
+	gpio_init(TC_PIN);
+	gpio_set_irq_enabled(TC_PIN, GPIO_IRQ_EDGE_RISE, true);
+	gpio_add_raw_irq_handler_masked((1<<TC_PIN), TC_trigger_IRQ);
+	irq_set_enabled(IO_IRQ_BANK0, true);
 
 	initialize_isa_pio(pio0);
 }

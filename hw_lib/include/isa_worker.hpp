@@ -7,6 +7,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "pico/types.h"
 
 void ISA_Pre_Init();
 void ISA_Init();
@@ -31,3 +32,9 @@ bool add_device(const Device & device);
 void ISA_Start();
 uint8_t IRQ_Create_Handle(uint8_t irq);
 void IRQ_Set(uint8_t irqh, bool val);
+
+void SetupSingleTransferTXDMA(uint dma_chan, const volatile uint8_t * buff, size_t len);
+void SetupSingleTransferRXDMA(uint dma_chan, volatile uint8_t * buff, size_t len);
+//has been ..
+bool TC_Triggered();
+
