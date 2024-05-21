@@ -7,6 +7,9 @@
 void wait(uint32_t ms);
 #pragma aux wait = "mov ax, 8600h" "int 15h" parm [cx dx] modify exact [ax];
 
+uint16_t get_cs();
+#pragma aux get_cs = "mov ax, cs" value [ax] modify exact [ax];
+
 
 typedef struct {
 	uint16_t es;
@@ -27,6 +30,14 @@ typedef struct {
 } IRQ_DATA;
 
 int __cdecl start(uint16_t irq, IRQ_DATA far *params);
+
+void __cdecl __far irq_3();
+
+static void install_irq(uint8_t no, void(__far *handler)())
+{
+	void(__far*__far *place)() = 0:>0;
+	place[no] = handler;
+}
 
 static inline void phase_passed(uint8_t far * phase)
 {
@@ -88,6 +99,31 @@ int start(uint16_t irq, IRQ_DATA far *params) {
 		phase_passed(&phase); // DMA started
 		io_reg = inb(0x79);
 		printf("\nDMA Data OK = %d\n",io_reg);
+
+		install_irq(0x70-8+9,get_cs():>irq_3);
+		install_irq(0x08+3,get_cs():>irq_3);
+		install_irq(0x08+4,get_cs():>irq_3);
+		install_irq(0x08+5,get_cs():>irq_3);
+		install_irq(0x70-8+10,get_cs():>irq_3);
+		install_irq(0x70-8+11,get_cs():>irq_3);
+		install_irq(0x70-8+15,get_cs():>irq_3);
+
+	    uint8_t value = inb(0x21) & ~(0x38);
+	    outb(0x21, value);
+
+	    value = inb(0xa1) & ~(0x8e);
+	    outb(0xa1, value);
+
+	    _enable();
+
+		phase_passed(&phase); // IRQ configured
+
+		for(int i=0;i<7;i++)
+		{
+			printf("I%04x %04x\n",inw(0x7a),inw(0x7c));
+			phase_passed(&phase); // IRQ READ
+		}
+
 		while(1)
 			phase_passed(&phase); //pico phases
 	}

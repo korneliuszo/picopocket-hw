@@ -142,6 +142,48 @@ handled label near
 	iret
 
 irq_entry	endp
+
+_irq_3 proc far
+public _irq_3:
+	push ax
+	mov al, 0x0a ; IRR
+	out 20h, al
+	out 0xa0, al
+	in al, 0xa0
+	mov ah, al
+	in al, 20h
+	out 7ah, ax
+	mov al, 0x0b ; ISR
+	out 20h, al
+	out 0xa0, al
+	in al, 0xa0
+	mov ah, al
+	in al, 20h
+	out 7ch, ax
+	mov al, 1
+	out 79h, al
+waitloop label near
+	in al, 79h
+	cmp al, 0
+	jne waitloop
+	mov al, 0x0b ; ISR
+	out 0xa0, al
+	in al,0xa0 ; PIC2
+	cmp al, 0
+	jne secondpic
+	mov al, 20h ; ack
+	out 0x20, al ; PIC_1
+	pop ax
+	iret
+secondpic label near
+	mov al, 20h ; ack
+	out 0xa0, al ; PIC_2
+	out 0x20, al ; PIC_1
+	pop ax
+	iret
+_irq_3	endp
+
+
 _TEXT ends
 
 	end

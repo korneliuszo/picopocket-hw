@@ -1,5 +1,6 @@
 #include "isa_worker.hpp"
 #include "hardware/dma.h"
+#include "pico/time.h"
 #include <string.h>
 #include "testd.hpp"
 
@@ -22,55 +23,38 @@ static uint32_t read_fn(void* obj, uint32_t faddr)
 static void nop_wrfn(void* obj, uint32_t faddr, uint8_t data) {}
 
 
-volatile uint8_t phase = 0x00;
-volatile uint8_t io_reg = 0x00;
+union Regs {
+struct [[gnu::packed]]  {
+	uint8_t phase;
+	uint8_t io_reg;
+	uint16_t irr;
+	uint16_t isr;
+	uint16_t padto8;
+} s;
+uint8_t reg[8];
+};
 
+volatile Regs regs;
 
 static uint32_t io_rdfn(void* obj, uint32_t faddr)
 {
-	switch(faddr)
-	{
-	case 0:
-	{
-		return phase;
-	}
-	case 1:
-	{
-		return io_reg;
-	}
-	default:
-		return 0xff;
-	}
+	return regs.reg[faddr];
 }
 static void io_wrfn(void* obj, uint32_t faddr, uint8_t data)
 {
-	switch(faddr)
-	{
-	case 0:
-	{
-		phase = data;
-		return;
-	}
-	case 1:
-	{
-		io_reg = data;
-		return;
-	}
-	default:
-		return;
-	}
+	regs.reg[faddr] = data;
 }
 
 static void wait_for_phase_passed(Thread * thread, uint8_t * phase_cntr)
 {
-	while (phase <= *phase_cntr)
+	while (regs.s.phase <= *phase_cntr)
 		thread->yield();
-	*phase_cntr = phase; //nonatomic!!!
+	*phase_cntr = regs.s.phase; //nonatomic!!!
 }
 static void start_new_phase(uint8_t * phase_cntr)
 {
 	*phase_cntr+=1;
-	phase = *phase_cntr;
+	regs.s.phase = *phase_cntr;
 }
 
 volatile uint8_t rx_buff[7*80*2];
@@ -106,7 +90,7 @@ static void testd_task(Thread * thread)
 	start_new_phase(&phase_cntr); // continue work on 386
 	// DMA Transfer
 	wait_for_phase_passed(thread,&phase_cntr); // DMA done
-	io_reg = TC_Triggered();
+	regs.s.io_reg = TC_Triggered();
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // TC info displayed
     SetupSingleTransferRXDMA(0,rx_buff,sizeof(rx_buff));
@@ -120,9 +104,43 @@ static void testd_task(Thread * thread)
 	{
 		thread->yield();
 	}
-	io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,sizeof(rx_buff)));
+	regs.s.io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,sizeof(rx_buff)));
 	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr);
+	// IRQ configured
 
+	uint8_t irq_handle = IRQ_Create_Handle(0);
+	regs.s.io_reg = 0;
+
+	uint8_t isrs[]={9,3,4,5,10,11,15};
+	for(size_t i=0;i<(sizeof(isrs)/sizeof(*isrs));i++)
+	{
+		IRQ_Handle_Change_IRQ(irq_handle,isrs[i]);
+		regs.s.irr = 0; //restore first arrived
+		regs.s.isr = 0;
+		IRQ_Set(irq_handle,true);
+		uint32_t timeout = to_ms_since_boot(get_absolute_time()) + 1000;
+		while((to_ms_since_boot(get_absolute_time())<timeout) && !regs.s.io_reg)
+			thread->yield();
+		IRQ_Set(irq_handle,false);
+		uint16_t irr = regs.s.irr; //latch first arrived
+		uint16_t isr = regs.s.isr;
+		regs.s.io_reg = 0;
+
+		timeout = to_ms_since_boot(get_absolute_time()) + 1000;
+		while((to_ms_since_boot(get_absolute_time())<timeout))
+		{ // eat up late
+			thread->yield();
+			regs.s.io_reg = 0;
+		}
+
+		regs.s.irr = irr; //restore first arrived
+		regs.s.isr = isr;
+
+		start_new_phase(&phase_cntr); // continue work on 386
+		//READ IRQ;
+		wait_for_phase_passed(thread,&phase_cntr);
+	}
 
 	while(1)
 		thread->yield();
@@ -138,5 +156,5 @@ void testd_install(Thread * main)
 
 uint8_t testd_get_phase()
 {
-	return phase;
+	return regs.s.phase;
 }

@@ -31,6 +31,7 @@ struct Device{
 bool add_device(const Device & device);
 void ISA_Start();
 uint8_t IRQ_Create_Handle(uint8_t irq);
+void IRQ_Handle_Change_IRQ(uint8_t irqh,uint8_t irq);
 void IRQ_Set(uint8_t irqh, bool val);
 
 void SetupSingleTransferTXDMA(uint dma_chan, const volatile uint8_t * buff, size_t len);

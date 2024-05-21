@@ -23,6 +23,7 @@ constexpr uint isa_bus_sm = 0;            // Warning : HardCoded ISA State Machi
 
 constexpr uint TC_PIN = 10;
 constexpr uint DRQ_PIN = 19;
+constexpr uint IA0_PIN = 26;
 
 [[gnu::section(".core1")]] volatile uint8_t mem_map[1024*1024/2048]; //2kB resolution - bitfield
 [[gnu::section(".core1")]] volatile uint8_t io_map[64*1024/8]; //8 IO regs resolution
@@ -38,7 +39,13 @@ void ISA_Pre_Init()
 	gpio_put(DRQ_PIN, 0);
 	gpio_set_dir(DRQ_PIN,true);
 
-	//TODO: IRQ
+	//IRQ
+	for(uint pin=IA0_PIN;pin<IA0_PIN+3;pin++)
+	{
+		gpio_init(pin);
+		gpio_put(pin, 0);
+		gpio_set_dir(pin,true);
+	}
 
 	memset((void*)mem_map,0,sizeof(mem_map));
 	memset((void*)io_map,0,sizeof(io_map));
@@ -302,31 +309,69 @@ void ISA_Start()
 
 struct IRQh {
 	bool lit;
+	uint8_t address;
 };
 
-static constexpr size_t IRQh_len = 2;
+static constexpr size_t IRQh_len = 10;
 
 static IRQh irqhandlers[IRQh_len];
 static size_t IRQh_used;
 
-uint8_t IRQ_Create_Handle(uint8_t irq) //we have one irq on this board
+void IRQ_Handle_Change_IRQ(uint8_t irqh,uint8_t irq)
+{
+	switch(irq)
+	{
+	case 9:
+		irqhandlers[irqh].address=1;
+		break;
+	case 3:
+		irqhandlers[irqh].address=2;
+		break;
+	case 4:
+		irqhandlers[irqh].address=3;
+		break;
+	case 5:
+		irqhandlers[irqh].address=4;
+		break;
+	case 10:
+		irqhandlers[irqh].address=5;
+		break;
+	case 11:
+		irqhandlers[irqh].address=6;
+		break;
+	case 15:
+		irqhandlers[irqh].address=7;
+		break;
+	default:
+		irqhandlers[irqh].address=0;
+		break;
+	}
+}
+
+
+uint8_t IRQ_Create_Handle(uint8_t irq)
 {
 	if(IRQh_used >= IRQh_len)
 		return 0xff;
+	IRQ_Handle_Change_IRQ(IRQh_used,irq);
 	return IRQh_used++;
 }
 
 void IRQ_Set(uint8_t irqh, bool val)
 {
-	if(irqh >IRQh_used)
+	if(irqh >= IRQh_used)
 		return;
 	irqhandlers[irqh].lit = val;
-	bool orirq = false;
-	for(size_t i=0;i<IRQh_used;i++)
+	uint8_t orirq = 0;
+	for(size_t i=0;i<IRQh_used;i++) // first handler prioritized
+	{
 		if(irqhandlers[i].lit)
-			orirq = true;
+		{
+			orirq = irqhandlers[i].address;
+			break;
+		}
+	}
 
-	//gpio_put(PIN_IRQ, orirq);  // Set IRQ Up (There is an inverter) for no IRQ
-
+	gpio_put_masked(7<<IA0_PIN,orirq<<IA0_PIN);
 }
 
