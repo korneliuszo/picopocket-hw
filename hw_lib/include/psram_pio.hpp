@@ -64,7 +64,7 @@ public:
 		if ((clock_hz*clock_ns)%1000000000UL)
 			div+=1;
 
-	    sm_config_set_clkdiv(&c, div);
+		sm_config_set_clkdiv_int_frac(&c, div,0);
 
 	    pio_sm_set_consecutive_pindirs(pio, sm_no, PIN_CS, 2, true);
 	    pio_sm_set_consecutive_pindirs(pio, sm_no, PIN_MOSI, 1, true);
