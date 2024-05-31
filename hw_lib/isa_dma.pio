@@ -87,6 +87,8 @@ common:
 #include "hardware/clocks.h"
 #endif
 
+#include <math.h>
+
 static inline void initialize_isa_pio(PIO isa_pio)
 {
 	// COMMON
@@ -96,12 +98,14 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	//                                         | |       /- 74lvc139 Tpd 
 	//                                         | |       |      /- max (74lvc245 Ten, SN74CB3T3245 Ten)
 	//                                         | |       |      |         10ns            8ns
-	float div = ((float)(clock_get_hz(clk_sys)/4*2))*(7.0e-9+10.e-9);
-
+	float div = ((float)(clock_get_hz(clk_sys)/4*1))*(7.0e-9+10.e-9);
+	int intdiv = ceil(div);
 	for (int i = PIN_AD0; i < PIN_AD0 + 8; i++) {
 		pio_gpio_init(isa_pio, i);    // Link the PIN to this PIO (All SM !)
 		gpio_set_slew_rate(i, GPIO_SLEW_RATE_FAST);
 	}
+
+	hw_set_bits(&isa_pio->input_sync_bypass, 0xffu << PIN_AD0);
 
 	pio_gpio_init(isa_pio,PIN_SIDE+0);
 	gpio_set_slew_rate(PIN_SIDE+0, GPIO_SLEW_RATE_FAST);
@@ -118,8 +122,8 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	uint isa_bus_offset = pio_add_program(isa_pio, &isa_bus_program);
 	pio_sm_config isa_bus = isa_bus_program_get_default_config(isa_bus_offset);
 	
-	sm_config_set_clkdiv(&isa_bus, div);
-	
+	sm_config_set_clkdiv_int_frac(&isa_bus, intdiv,0);
+		
 	//                                  /- shift left
 	//                                  |      /- autopush
 	sm_config_set_in_shift( &isa_bus, false, true, 32);  	                     
