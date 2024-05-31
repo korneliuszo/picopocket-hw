@@ -15,3 +15,8 @@ target_link_libraries(isa_worker
 		pico_stdio_semihosting
 		pico_stdlib
 )
+
+add_library(psram_pio INTERFACE)
+pico_generate_pio_header(psram_pio ${CMAKE_CURRENT_LIST_DIR}/psram.pio)
+target_include_directories(psram_pio INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
+target_link_libraries(psram_pio INTERFACE hardware_pio hardware_clocks hardware_dma)

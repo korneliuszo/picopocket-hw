@@ -1,0 +1,25 @@
+; SPI for PSRAM
+; assert PIN_CS + 1 == PIN_SCK
+
+.program spi_psram_dma
+.side_set 2 opt                    ; sideset bit 1 is SCK, bit 0 is CS
+  
+.wrap_target             
+wloopy:
+	out pins, 1            side 0b00    ;t_SP start
+	jmp y-- wloopy         side 0b10    ;t_CSP t_SP end
+rx_start:
+	jmp !x wait_for_tx     side 0b00    ;t_ACLK start
+	nop                    side 0b10
+	nop                    side 0b00	;nop cycle 
+rloopx:
+	in pins, 1             side 0b10 
+	jmp x-- rloopx	       side 0b00
+wait_for_tx:
+	nop                    side 0b00 [1] ;t_CHD end
+PUBLIC entry:
+	nop                    side 0b01
+	out y,32           ;no side
+	out x,32           ;no side
+	nop                    side 0b00    ;t_CSP start
+.wrap

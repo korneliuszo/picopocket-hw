@@ -124,6 +124,16 @@ int start(uint16_t irq, IRQ_DATA far *params) {
 			phase_passed(&phase); // IRQ READ
 		}
 
+		io_reg = inb(0x79);
+		printf("PSRAM KGD = %02x\n",io_reg);
+		phase_passed(&phase); // PSRAM stat displayed
+
+
+		io_reg = inb(0x79);
+		printf("PSRAM Data OK = %02x\n",io_reg);
+		phase_passed(&phase); // PSRAM stat displayed
+
+
 		while(1)
 			phase_passed(&phase); //pico phases
 	}

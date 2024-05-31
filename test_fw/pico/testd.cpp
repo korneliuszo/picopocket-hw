@@ -3,6 +3,8 @@
 #include "pico/time.h"
 #include <string.h>
 #include "testd.hpp"
+#include "psram_pio.hpp"
+#include "ar1021.hpp"
 
 [[gnu::aligned(4)]] volatile uint8_t monitor_data_window[2048];
 
@@ -10,6 +12,7 @@ extern "C" const uint8_t _binary_optionrom_bin_start[];
 extern "C" const uint8_t _binary_optionrom_bin_size[];
 
 extern "C" const uint8_t _binary_banner_bin_start[];
+extern "C" const uint8_t _binary_banner_bin_end[];
 extern "C" const uint8_t _binary_banner_bin_size[];
 
 
@@ -57,7 +60,8 @@ static void start_new_phase(uint8_t * phase_cntr)
 	regs.s.phase = *phase_cntr;
 }
 
-volatile uint8_t rx_buff[7*80*2];
+volatile uint8_t rx_buff[25*80*2];
+constexpr size_t rx_banner_size = 7*80*2;
 
 static void testd_task(Thread * thread)
 {
@@ -85,15 +89,15 @@ static void testd_task(Thread * thread)
 	wait_for_phase_passed(thread,&phase_cntr); // DMA TEST
 
 	//prepare write DMA
-    uint dma_chan = 0;
-    SetupSingleTransferTXDMA(0,(uint8_t*)_binary_banner_bin_start,(size_t)_binary_banner_bin_size);
+    uint dma_chan = dma_claim_unused_channel(true);
+    SetupSingleTransferTXDMA(dma_chan,(uint8_t*)_binary_banner_bin_start,(size_t)_binary_banner_bin_size);
 	start_new_phase(&phase_cntr); // continue work on 386
 	// DMA Transfer
 	wait_for_phase_passed(thread,&phase_cntr); // DMA done
 	regs.s.io_reg = TC_Triggered();
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // TC info displayed
-    SetupSingleTransferRXDMA(0,rx_buff,sizeof(rx_buff));
+    SetupSingleTransferRXDMA(dma_chan,rx_buff,rx_banner_size);
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // DMA started
 	while(!TC_Triggered())
@@ -104,7 +108,7 @@ static void testd_task(Thread * thread)
 	{
 		thread->yield();
 	}
-	regs.s.io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,sizeof(rx_buff)));
+	regs.s.io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,rx_banner_size));
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr);
 	// IRQ configured
@@ -119,7 +123,7 @@ static void testd_task(Thread * thread)
 		regs.s.irr = 0; //restore first arrived
 		regs.s.isr = 0;
 		IRQ_Set(irq_handle,true);
-		uint32_t timeout = to_ms_since_boot(get_absolute_time()) + 1000;
+		uint32_t timeout = to_ms_since_boot(get_absolute_time()) + 500;
 		while((to_ms_since_boot(get_absolute_time())<timeout) && !regs.s.io_reg)
 			thread->yield();
 		IRQ_Set(irq_handle,false);
@@ -127,7 +131,7 @@ static void testd_task(Thread * thread)
 		uint16_t isr = regs.s.isr;
 		regs.s.io_reg = 0;
 
-		timeout = to_ms_since_boot(get_absolute_time()) + 1000;
+		timeout = to_ms_since_boot(get_absolute_time()) + 500;
 		while((to_ms_since_boot(get_absolute_time())<timeout))
 		{ // eat up late
 			thread->yield();
@@ -141,6 +145,35 @@ static void testd_task(Thread * thread)
 		//READ IRQ;
 		wait_for_phase_passed(thread,&phase_cntr);
 	}
+
+	AR1021::AR1021::set_cs_disabled();
+
+	PSRAM::PSRAM::init();
+	volatile uint64_t psram_id = PSRAM::PSRAM::read_id_sync();
+
+	regs.s.io_reg = psram_id>>(6*8);
+
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // PSRAM stat displayed
+
+	{
+    	const uint8_t * mem = (const uint8_t*)_binary_banner_bin_start;
+		auto ptask = PSRAM::PSRAM::Write_Mem_Task(0,mem,sizeof(rx_buff));
+		while(!ptask.complete_trigger())
+			thread->yield();
+	}
+    memset((uint8_t*)rx_buff,1,sizeof(rx_buff));
+    {
+    	auto ptask = PSRAM::PSRAM::Read_Mem_Task(0,rx_buff,sizeof(rx_buff));
+		while(!ptask.complete_trigger())
+			thread->yield();
+    }
+	regs.s.io_reg = !(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,sizeof(rx_buff)));
+
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // PSRAM DATA OK
+
+	__breakpoint();
 
 	while(1)
 		thread->yield();

@@ -40,4 +40,5 @@ target_link_libraries(test PRIVATE
 	optionrom
 	banner
 	jmpcoro
+	psram_pio
 )
