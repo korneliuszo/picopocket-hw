@@ -133,6 +133,8 @@ int start(uint16_t irq, IRQ_DATA far *params) {
 		printf("PSRAM Data OK = %02x\n",io_reg);
 		phase_passed(&phase); // PSRAM stat displayed
 
+		printf("TOUCH VER:0x%04x TYPE:0x%02x ",inw(0x7a),inb(0x79));
+		phase_passed(&phase); // TOUCH stat displayed
 
 		while(1)
 			phase_passed(&phase); //pico phases

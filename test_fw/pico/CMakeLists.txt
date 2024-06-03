@@ -41,4 +41,5 @@ target_link_libraries(test PRIVATE
 	banner
 	jmpcoro
 	psram_pio
+	ar1021_pio
 )

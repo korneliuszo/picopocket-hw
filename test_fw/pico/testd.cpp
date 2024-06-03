@@ -34,6 +34,11 @@ struct [[gnu::packed]]  {
 	uint16_t isr;
 	uint16_t padto8;
 } s;
+struct [[gnu::packed]]  {
+	uint8_t phase;
+	uint8_t type;
+	uint16_t ver;
+} s2;
 uint8_t reg[8];
 };
 
@@ -146,7 +151,7 @@ static void testd_task(Thread * thread)
 		wait_for_phase_passed(thread,&phase_cntr);
 	}
 
-	AR1021::AR1021::set_cs_disabled();
+	AR1021::AR1021::init();
 
 	PSRAM::PSRAM::init();
 	volatile uint64_t psram_id = PSRAM::PSRAM::read_id_sync();
@@ -172,8 +177,16 @@ static void testd_task(Thread * thread)
 
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // PSRAM DATA OK
+	AR1021::AR1021::disable_touch(thread);
 
-	__breakpoint();
+	uint16_t version=0;
+	uint8_t type=0;
+	AR1021::AR1021::get_version(version,type,thread);
+	regs.s2.ver = version;
+	regs.s2.type = type;
+	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // TOUCH DISP
+
 
 	while(1)
 		thread->yield();
