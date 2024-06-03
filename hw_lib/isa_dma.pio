@@ -29,18 +29,19 @@ wrapper:
 	wait 1 gpio PIN_ATTN        side OPERATION_CONTROL_A19_A16
 //	irq clear 4                 side OPERATION_CONTROL_A19_A16
 	// jump if dma
-	jmp pin dma                 side OPERATION_CONTROL_A19_A16     [1]
+	jmp pin dma                 side OPERATION_CONTROL_A19_A16
 	in pins, 8                  side OPERATION_A15_A8              [1]
+	nop                         side OPERATION_A15_A8              [1]
 	nop                         side OPERATION_A15_A8              [1]
 	in pins, 8                  side OPERATION_A7_A0               [1]
 	nop                         side OPERATION_A7_A0               [1]
-	in pins, 8                  side OPERATION_DATA                [1]
-	nop                         side OPERATION_DATA                [1]
+	nop                         side OPERATION_A7_A0               [1]
 	in pins, 8                  side OPERATION_DATA
 	out X, 8                    side OPERATION_DATA
 	jmp !X wrapper              side OPERATION_DATA
 	
 our_dev:
+	out X, 8                    side OPERATION_DATA_PAUSE
 	jmp X!=Y rd                 side OPERATION_DATA_PAUSE
 	jmp wait_for_exec           side OPERATION_DATA_PAUSE
 rd:
@@ -60,7 +61,7 @@ dma:
 	irq wait 7             //no side
 	// could be pause here to be safe on fifo not ready
 	jmp pin rd                  side OPERATION_CONTROL_A19_A16  // [1] // we check RD pin
-	nop                         side OPERATION_DATA             // [1]
+	nop                         side OPERATION_DATA                [1]
 	in pins, 8                  side OPERATION_DATA
 	jmp common	                side OPERATION_DATA
 rd:
@@ -96,9 +97,9 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	//                                         | /- safety margin
 	//                                         | |       
 	//                                         | |       /- 74lvc139 Tpd 
-	//                                         | |       |      /- max (74lvc245 Ten, SN74CB3T3245 Ten)
-	//                                         | |       |      |         10ns            8ns
-	float div = ((float)(clock_get_hz(clk_sys)/4*1))*(7.0e-9+10.e-9);
+	//                                         | |       |      /- 74lvc245 Ten
+	//                                         | |       |      |
+	float div = ((float)(clock_get_hz(clk_sys)/6*1))*(6.0e-9+9.e-9);
 	int intdiv = ceil(div);
 	for (int i = PIN_AD0; i < PIN_AD0 + 8; i++) {
 		pio_gpio_init(isa_pio, i);    // Link the PIN to this PIO (All SM !)
@@ -126,7 +127,7 @@ static inline void initialize_isa_pio(PIO isa_pio)
 		
 	//                                  /- shift left
 	//                                  |      /- autopush
-	sm_config_set_in_shift( &isa_bus, false, true, 32);  	                     
+	sm_config_set_in_shift( &isa_bus, false, true, 24);  	                     
 	//                                  /- shift right
 	//                                  |     /- autopull
 	sm_config_set_out_shift(&isa_bus, true, true, 8);
@@ -149,7 +150,7 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	uint dma_helper_offset = pio_add_program(isa_pio, &dma_helper_program);
 	pio_sm_config dma_helper = dma_helper_program_get_default_config(dma_helper_offset);
 	
-	sm_config_set_clkdiv(&dma_helper, div);
+	sm_config_set_clkdiv(&dma_helper, intdiv);
 	sm_config_set_in_shift(&dma_helper, false /* not tested */, true /* autopush */, 8);
 	sm_config_set_out_shift(&dma_helper, true /* not tested */, true /* autopull */, 8);
 	

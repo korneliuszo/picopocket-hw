@@ -133,10 +133,10 @@ struct Device_int
 };
 
 
-constexpr uint32_t MEM_RD = (1<<(20+8+3));
-constexpr uint32_t MEM_WR = (1<<(20+8+2));
-constexpr uint32_t IO_RD = (1<<(20+8+1));
-constexpr uint32_t IO_WR = (1<<(20+8+0));
+constexpr uint32_t MEM_RD = (1<<(20+8+3-8));
+constexpr uint32_t MEM_WR = (1<<(20+8+2-8));
+constexpr uint32_t IO_RD = (1<<(20+8+1-8));
+constexpr uint32_t IO_WR = (1<<(20+8+0-8));
 
 
 std::array<Device_int,4> devices_mem = {};
@@ -200,7 +200,7 @@ template <uint32_t OP, auto & device_tbl>
 [[gnu::always_inline]] static inline void do_transfer(const uint32_t idx, const uint32_t &ISA_TRANS)
 {
 	PIO isa_pio = pio0;
-	uint32_t FADDR = ISA_TRANS>>8;
+	uint32_t FADDR = ISA_TRANS;
 	auto && dev = device_tbl[idx-1];
 
 	if(ISA_TRANS&OP)
@@ -212,7 +212,8 @@ template <uint32_t OP, auto & device_tbl>
 	}
 	else
 	{
-		dev.wrfn(dev.obj,FADDR & (dev.mask),ISA_TRANS);
+		uint8_t data = gpio_get_all()>>PIN_AD0;
+		dev.wrfn(dev.obj,FADDR & (dev.mask),data);
 		return;
 	}
 
@@ -233,7 +234,7 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 		// ** Wait until a Control signal is detected **
 		asm volatile goto (
 				"ldr %[TMP2], =%[Yreg] \n\t"
-				"str    %[TMP2],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = Yreg - turn on RDY
+				"strb    %[TMP2],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = Yreg - turn on RDY
 				"not_us_retry:\n\t"
 				"1:\n\t"
 				"ldr %[TMP], [%[PIOB],%[PIOF]]\n\t" // read fstat
@@ -242,34 +243,32 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 
 				"ldr  %[ISA_TRANS],[%[PIOB],%[PIOR]] \n\t" // read ISA_TRANSACTION from PIO
 
-				"lsr    %[TMP3], %[ISA_TRANS], #(32-2)\n\t" // TMP = ISA_TRANS >> (32-2)
+				"lsr    %[TMP3], %[ISA_TRANS], #(32-8-2)\n\t" // TMP = ISA_TRANS >> (32-2)
 				"cmp    %[TMP3],#0 \n\t"					 // TMP == 0
 				"beq io\n\t" 							// memory_access
 
-				"lsl    %[TMP], %[ISA_TRANS], #4\n\t" // TMP = ISA_TRANS << 4 // eat up flags
+				"lsl    %[TMP], %[ISA_TRANS], #(4+8)\n\t" // TMP = ISA_TRANS << 4 // eat up flags
 				"lsr    %[TMP], %[TMP], #(32-20+11)\n\t" // TMP = TMP >> (32-20+11) // move so we have page address
 				"ldr %[TMP2], =%[MEMT] \n\t"
 				"ldrb %[ISA_IDX],[%[TMP2],%[TMP]]\n\t"	// tmp = io_map[tmp]
+				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"cmp %[ISA_IDX], #0\n\t"
-				"beq not_us\n\t"
+				"beq not_us_retry\n\t"
 				"strb    %[TMP3],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"b %l[memaction]\n\t" // jump to memaction
 
 				"io:\n\t"
-				"lsl    %[TMP], %[ISA_TRANS], #(4+4)\n\t" // TMP = ISA_TRANS << 4 // eat up flags and high address bits
+				"lsl    %[TMP], %[ISA_TRANS], #(4+4+8)\n\t" // TMP = ISA_TRANS << 4 // eat up flags and high address bits
 				"lsr    %[TMP], %[TMP], #(32-16+3)\n\t" // TMP = TMP >> (32-16+3) // move so we have page address
 				"ldr %[TMP2], =%[IOT] \n\t"
 				"ldrb %[ISA_IDX],[%[TMP2],%[TMP]]\n\t"	// tmp = io_map[tmp]
+				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"cmp %[ISA_IDX], #0\n\t"
-				"beq not_us \n\t"
-				"lsl    %[TMP3], %[ISA_TRANS], #2\n\t" // TMP3 = ISA_TRANS << (2)
+				"beq not_us_retry \n\t"
+				"lsl    %[TMP3], %[ISA_TRANS], #(2+8)\n\t" // TMP3 = ISA_TRANS << (2)
 				"lsr    %[TMP3], %[TMP3], #(32-2)\n\t" // TMP3 = TMP3 >> (32-2)
 				"strb    %[TMP3],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"b %l[ioaction]\n\t"							  // jump to memaction
-
-				"not_us:\n\t" //ISA_IDX is 0
-				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
-				"b not_us_retry\n\t"						// if so jump to noaction
 
 				".ltorg\n\t"
 				:[TMP3]"=l" (TMP3),
