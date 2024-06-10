@@ -19,6 +19,7 @@ add_custom_command(
 			${CMAKE_CURRENT_SOURCE_DIR}/S8LE2_22050.raw
 			-t raw -r 44100 -b 16 -c 2 -L -e signed-integer
 			${CMAKE_CURRENT_BINARY_DIR}/S16LE2_44100.raw
+			gain -55
 	#places in data
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/S8LE2_22050.raw
 )
