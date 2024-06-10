@@ -51,6 +51,12 @@ static inline void phase_passed(uint8_t far * phase)
 	return;
 }
 
+uint16_t get_pos()
+{
+	return ((inb(0x7A)*80) + inb(0x79))*2 + 1;
+}
+
+
 int start(uint16_t irq, IRQ_DATA far *params) {
 	if (irq == 0) {
 		bios_printf(BIOS_PRINTF_ALL, "Picopocket tester\n");
@@ -136,8 +142,21 @@ int start(uint16_t irq, IRQ_DATA far *params) {
 		printf("TOUCH VER:0x%04x TYPE:0x%02x ",inw(0x7a),inb(0x79));
 		phase_passed(&phase); // TOUCH stat displayed
 
+		phase_passed(&phase); // AUDIO played
+		//prepared touchscreen
+
+		uint8_t __far *vga_screen = 0xb800:>0;
+		uint16_t prev_pos=1;
 		while(1)
-			phase_passed(&phase); //pico phases
+		{
+			uint16_t pos = get_pos();
+			if(prev_pos != pos)
+			{
+				vga_screen[prev_pos] = 0x07;
+				vga_screen[pos] = 0x7F;
+				prev_pos = pos;
+			}
+		}
 	}
 	error:
 	while(1);
