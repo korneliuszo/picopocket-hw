@@ -42,6 +42,12 @@ struct [[gnu::packed]]  {
 	uint8_t type;
 	uint16_t ver;
 } s2;
+struct [[gnu::packed]]  {
+	uint8_t phase;
+	uint8_t X;
+	uint8_t Y;
+	uint8_t pen;
+} s3;
 uint8_t reg[8];
 };
 
@@ -198,10 +204,25 @@ static void testd_task(Thread * thread)
 		thread->yield();
 
 	start_new_phase(&phase_cntr); // continue work on 386
+	wait_for_phase_passed(thread,&phase_cntr); // AUDIO played
+
+	regs.s3.X = 80/2;
+	regs.s3.Y = 25/2;
+	regs.s3.pen = 0;
+	AR1021::AR1021::enable_touch(thread);
+
+	start_new_phase(&phase_cntr); // prepared touchscreen
 
 	while(1)
-		thread->yield();
-
+	{
+		auto report = AR1021::AR1021::get_pos(thread);
+		if(report.valid)
+		{
+			regs.s3.X = report.x*80/(1<<12);
+			regs.s3.Y = report.y*25/(1<<12);
+			regs.s3.pen = report.pen;
+		}
+	}
 }
 
 static StaticThread<1024> testd;
