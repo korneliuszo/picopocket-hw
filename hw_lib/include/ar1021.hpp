@@ -260,18 +260,18 @@ public:
 	template<class Thread>
 	static Report get_pos(Thread * thread, uint sync_tries=6)
 	{
-		Report ret;
+		Report ret = {.valid = false};
 		while(sync_tries--)
 		{
 			uint8_t hdr = transfer_byte_sync(0x00,thread);
-			if(hdr&0x80==0x80)
+			if((hdr&0x80)==0x80)
 			{ //no goto but more nested blocks - hdr used + struct ret
 				uint8_t buff[4];
 				transfer_sync(nullptr,0,buff,4,thread);
-				if(buff[0]&0x80==0x00)
-					if(buff[1]&0x80==0x00)
-						if(buff[2]&0x80==0x00)
-							if(buff[3]&0x80==0x00)
+				if((buff[0]&0x80)==0x00)
+					if((buff[1]&0x80)==0x00)
+						if((buff[2]&0x80)==0x00)
+							if((buff[3]&0x80)==0x00)
 							{
 								ret.valid = true;
 								ret.pen = (hdr&0x01==0x01);
