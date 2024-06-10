@@ -191,12 +191,11 @@ static void testd_task(Thread * thread)
 	wait_for_phase_passed(thread,&phase_cntr); // TOUCH DISP
 
 	AudioDMA::AudioDMA::init();
-#if 0
+
 	AudioDMA::AudioDMA::Single_playback::init_playback(44100,Jingle_ptr,Jingle_size);
 
 	while(!AudioDMA::AudioDMA::Single_playback::is_complete())
 		thread->yield();
-#endif
 
 	start_new_phase(&phase_cntr); // continue work on 386
 
