@@ -10,11 +10,28 @@ add_custom_command(
 
 add_custom_target(banner_obj DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/banner.o)
 
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/S16LE2_44100.raw
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	COMMAND 
+		sox 
+			-t raw -r 22050 -b 8 -c 2 -L -e signed-integer 
+			${CMAKE_CURRENT_SOURCE_DIR}/S8LE2_22050.raw
+			-t raw -r 44100 -b 16 -c 2 -L -e signed-integer
+			${CMAKE_CURRENT_BINARY_DIR}/S16LE2_44100.raw
+	#places in data
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/S8LE2_22050.raw
+)
 
 add_library(banner OBJECT IMPORTED GLOBAL)
 add_dependencies(banner banner_obj)
 set_target_properties(banner PROPERTIES
   IMPORTED_OBJECTS "${CMAKE_CURRENT_BINARY_DIR}/banner.o")
+
+add_custom_target(S16LE2_44100_obj DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/S16LE2_44100.raw)
+add_library(S16LE2_44100 S16LE2_44100.s)
+target_include_directories(S16LE2_44100 PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+add_dependencies(S16LE2_44100 S16LE2_44100_obj)
 
 target_include_directories(test_tusb INTERFACE tusb)
 
@@ -42,4 +59,6 @@ target_link_libraries(test PRIVATE
 	jmpcoro
 	psram_pio
 	ar1021_pio
+	audio_dma
+	S16LE2_44100
 )

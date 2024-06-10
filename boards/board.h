@@ -23,6 +23,12 @@
 #define TOUCH_PIN_MISO 12
 #define TOUCH_PIO 1
 
+#define AUDIO_DIN 16
+#define AUDIO_BCK 17
+#define AUDIO_LRCK 18
+#define AUDIO_PIO 1
+#define AUDIO_DMA_IRQN 0
+
 // pick up the rest of the settings
 #include "boards/pico_w.h"
 

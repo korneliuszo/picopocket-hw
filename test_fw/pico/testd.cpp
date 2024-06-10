@@ -5,6 +5,7 @@
 #include "testd.hpp"
 #include "psram_pio.hpp"
 #include "ar1021.hpp"
+#include "audio_dma.hpp"
 
 [[gnu::aligned(4)]] volatile uint8_t monitor_data_window[2048];
 
@@ -14,6 +15,8 @@ extern "C" const uint8_t _binary_optionrom_bin_size[];
 extern "C" const uint8_t _binary_banner_bin_start[];
 extern "C" const uint8_t _binary_banner_bin_end[];
 extern "C" const uint8_t _binary_banner_bin_size[];
+
+#include "S16LE2_44100.hpp"
 
 
 static uint32_t read_fn(void* obj, uint32_t faddr)
@@ -187,6 +190,14 @@ static void testd_task(Thread * thread)
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // TOUCH DISP
 
+	AudioDMA::AudioDMA::init();
+
+	AudioDMA::AudioDMA::Single_playback::init_playback(44100,Jingle_ptr,Jingle_size);
+
+	while(!AudioDMA::AudioDMA::Single_playback::is_complete())
+		thread->yield();
+
+	start_new_phase(&phase_cntr); // continue work on 386
 
 	while(1)
 		thread->yield();
