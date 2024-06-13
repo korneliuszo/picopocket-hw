@@ -8,6 +8,7 @@
 *.kicad_pcb-bak
 *.kicad_sch-bak
 *-backups
+*/*-backups
 *.kicad_prl
 *.sch-bak
 *~
@@ -19,6 +20,7 @@ fp-info-cache
 
 # Netlist files (exported from Eeschema)
 *.net
+*.ipc
 
 # Autorouter files (exported from Pcbnew)
 *.dsn
