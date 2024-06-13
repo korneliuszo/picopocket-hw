@@ -1,8 +1,7 @@
 /*
- * isa_worker.cpp
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
  *
- *  Created on: Jan 6, 2024
- *      Author: kosa
+ * SPDX-License-Identifier: MIT
  */
 
 #include "hardware/structs/sio.h"

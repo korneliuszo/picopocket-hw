@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 #include "isa_worker.hpp"
 #include "hardware/dma.h"
 #include "pico/time.h"

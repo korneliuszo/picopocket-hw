@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>

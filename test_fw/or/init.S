@@ -1,3 +1,9 @@
+;
+; SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+;
+; SPDX-License-Identifier: GPL-2.0
+;
+
 .8086
 
 _TEXT  segment word public 'CODE'

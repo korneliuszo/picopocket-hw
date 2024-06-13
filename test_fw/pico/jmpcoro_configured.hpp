@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT-0
+ */
 #pragma once
 
 #include <jmpcoro.hpp>

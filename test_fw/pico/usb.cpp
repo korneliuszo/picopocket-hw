@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 #include "tusb.h"
 #include "pico/bootrom.h"
 #include "device/usbd_pvt.h"

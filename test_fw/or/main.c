@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include <i86.h>
 #include <stdint.h>
 #include <string.h>

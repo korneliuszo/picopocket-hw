@@ -1,4 +1,9 @@
-
+/*
+ * SPDX-FileCopyrightText: Korneliusz Osmenda <korneliuszo@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+ 
 .define public PIN_ATTN           11
 .define public PIN_DACK            8
 .define public PIN_AD0             0
