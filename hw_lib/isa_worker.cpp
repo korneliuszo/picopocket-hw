@@ -206,11 +206,20 @@ template <uint32_t OP, auto & device_tbl>
 	{ // READ
 		uint32_t datard;
 		datard = dev.rdfn(dev.obj,FADDR & (dev.mask));
-		pio_sm_put(isa_pio,0,datard);
+		if(datard!=0xffffffff)
+		{
+			pio_sm_put(isa_pio,0,2);
+			pio_sm_put(isa_pio,0,datard);
+		}
+		else
+		{
+			pio_sm_put(isa_pio,0,1);
+		}
 		return;
 	}
 	else
 	{
+		pio_sm_put(isa_pio,0,1);
 		uint8_t data = gpio_get_all()>>PIN_AD0;
 		dev.wrfn(dev.obj,FADDR & (dev.mask),data);
 		return;
@@ -233,7 +242,7 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 		// ** Wait until a Control signal is detected **
 		asm volatile goto (
 				"ldr %[TMP2], =%[Yreg] \n\t"
-				"strb    %[TMP2],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = Yreg - turn on RDY
+				"str     %[TMP2],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = Yreg - turn on RDY
 				"not_us_retry:\n\t"
 				"1:\n\t"
 				"ldr %[TMP], [%[PIOB],%[PIOF]]\n\t" // read fstat
@@ -253,7 +262,6 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"cmp %[ISA_IDX], #0\n\t"
 				"beq not_us_retry\n\t"
-				"strb    %[TMP3],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"b %l[memaction]\n\t" // jump to memaction
 
 				"io:\n\t"
@@ -264,9 +272,6 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"cmp %[ISA_IDX], #0\n\t"
 				"beq not_us_retry \n\t"
-				"lsl    %[TMP3], %[ISA_TRANS], #(2+8)\n\t" // TMP3 = ISA_TRANS << (2)
-				"lsr    %[TMP3], %[TMP3], #(32-2)\n\t" // TMP3 = TMP3 >> (32-2)
-				"strb    %[TMP3],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
 				"b %l[ioaction]\n\t"							  // jump to memaction
 
 				".ltorg\n\t"

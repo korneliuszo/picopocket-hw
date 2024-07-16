@@ -25,7 +25,7 @@
 .side_set 3 opt
 
 wait_for_exec: 
-	out Y, 8                    side OPERATION_DATA_PAUSE
+	out Y, 32                   side OPERATION_DATA_PAUSE
 .wrap_target
 wrapper:
 	wait 0 gpio PIN_ATTN        side OPERATION_DATA                [1]
@@ -46,7 +46,7 @@ wrapper:
 	jmp !X wrapper              side OPERATION_DATA
 	
 our_dev:
-	out X, 8                    side OPERATION_DATA_PAUSE
+	out X, 32                   side OPERATION_DATA_PAUSE
 	jmp X!=Y rd                 side OPERATION_DATA_PAUSE
 	jmp wait_for_exec           side OPERATION_DATA_PAUSE
 rd:
