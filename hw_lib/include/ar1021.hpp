@@ -32,9 +32,7 @@ template<uint PIN_MISO, uint PIN_MOSI, uint PIN_SCK, uint PIN_CS, uint PION>
 class AR1021_Impl {
 
 	static inline int sm_no;
-	static inline int sm_no_cs;
 	static inline uint program_offset;
-	static inline uint program_offset_cs;
 
 	static inline absolute_time_t timeout;
 
@@ -47,9 +45,6 @@ public:
 		sm_no = pio_claim_unused_sm(pio,true);
 		program_offset = pio_add_program(pio, &spi_shifted_program);
 
-		sm_no_cs = pio_claim_unused_sm(pio,true);
-		program_offset_cs = pio_add_program(pio, &spi_shifted_cs_program);
-
 		pio_sm_config c;
 		c = spi_shifted_program_get_default_config(program_offset);
 
@@ -57,7 +52,7 @@ public:
 	    sm_config_set_in_pins(&c, PIN_MISO);
 	    sm_config_set_sideset_pins(&c, PIN_SCK);
 	    sm_config_set_out_shift(&c, false, false, 8);
-	    sm_config_set_in_shift(&c, false, true, 8);
+	    sm_config_set_in_shift(&c, false, true, 9);
 
 		constexpr uint64_t clock_ns = 600/2;
 		uint clock_hz = clock_get_hz(clk_sys);
@@ -67,28 +62,22 @@ public:
 
 		sm_config_set_clkdiv_int_frac(&c, div,0);
 
-		pio_sm_config c_cs;
-		c_cs = spi_shifted_cs_program_get_default_config(program_offset);
-
-	    sm_config_set_sideset_pins(&c_cs, PIN_CS);
-
-	    pio_sm_set_consecutive_pindirs(pio, sm_no_cs, PIN_CS, 1, true);
 	    pio_sm_set_consecutive_pindirs(pio, sm_no, PIN_SCK, 1, true);
 	    pio_sm_set_consecutive_pindirs(pio, sm_no, PIN_MOSI, 1, true);
 	    pio_sm_set_consecutive_pindirs(pio, sm_no, PIN_MISO, 1, false);
 	    pio_gpio_init(pio, PIN_MOSI);
 	    gpio_set_slew_rate(PIN_MOSI,GPIO_SLEW_RATE_FAST);
-	    pio_gpio_init(pio, PIN_CS);
+
+	    gpio_set_dir(PIN_CS, GPIO_OUT);
+	    gpio_put(PIN_CS, 1);
+	    gpio_set_function(PIN_CS, GPIO_FUNC_SIO);
+
 	    gpio_set_slew_rate(PIN_CS,GPIO_SLEW_RATE_FAST);
 	    pio_gpio_init(pio, PIN_SCK);
 	    gpio_set_slew_rate(PIN_SCK,GPIO_SLEW_RATE_FAST);
 
-	    pio_sm_init(pio, sm_no, program_offset, &c);
+	    pio_sm_init(pio, sm_no, program_offset + spi_shifted_offset_entry, &c);
 	    pio_sm_set_enabled(pio, sm_no, true);
-
-	    pio_sm_init(pio, sm_no_cs, program_offset_cs, &c_cs);
-	    pio_sm_set_enabled(pio, sm_no_cs, true);
-
 
 	    timeout = 0;
 	}
@@ -100,11 +89,14 @@ public:
 			thread->yield();
 		volatile PIO pio = PIO_Selector::PIOPort<PION>();
 		//pio_sm_put(pio,sm_no,out);
-		*reinterpret_cast<volatile uint8_t*>(&pio->txf[sm_no]) = out;
+	    gpio_put(PIN_CS, 0);
+		busy_wait_at_least_cycles(550e-9*380e6+1);
+	    *reinterpret_cast<volatile uint8_t*>(&pio->txf[sm_no]) = out;
 		while(pio_sm_is_rx_fifo_empty(pio,sm_no))
 			thread->yield();
+	    gpio_put(PIN_CS, 1);
 		timeout  = delayed_by_us(get_absolute_time(),50*2);
-		uint8_t ret = pio_sm_get(pio,sm_no);
+		uint8_t ret = pio_sm_get(pio,sm_no)>>1;
 		return ret;
 	}
 

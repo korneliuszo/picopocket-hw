@@ -8,23 +8,11 @@
 .side_set 1 opt
 
 .wrap_target
-	pull        ;no side
-	irq clear 4     side 0b0 [1]
-	out pins,1      side 0b1 [1]
 loopx:
-	nop             side 0b0
-	in pins,1       side 0b0
 	out pins,1      side 0b1
-	jmp !osre loopx side 0b1
-	nop             side 0b0
-	in pins,1       side 0b0 [2]
-	irq clear 4     side 0b0	
-.wrap
-
-.program spi_shifted_cs
-.side_set 1
-
-.wrap_target
-	irq wait 4               side 0x1
-	irq wait 4               side 0x0
+	in pins,1       side 0b1
+	jmp !osre loopx side 0b0 [1]
+	in pins,1       side 0b0 
+PUBLIC entry:
+	pull        ;no side
 .wrap
