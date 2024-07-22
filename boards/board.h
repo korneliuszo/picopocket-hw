@@ -29,6 +29,8 @@
 #define AUDIO_PIO 1
 #define AUDIO_DMA_IRQN 0
 
+#define CYW43_PIO_CLOCK_DIV 6
+
 // pick up the rest of the settings
 #include "boards/pico_w.h"
 
