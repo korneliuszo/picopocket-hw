@@ -11969,7 +11969,7 @@
 			(justify left bottom mirror)
 		)
 	)
-	(gr_text "Picopocket carrier V1.0"
+	(gr_text "Picopocket carrier V1.0.x"
 		(at 199.25 89.9 0)
 		(layer "B.SilkS")
 		(uuid "bcae585f-65b6-47a3-8786-683592ac1a38")
