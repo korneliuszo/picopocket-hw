@@ -11,6 +11,7 @@ target_link_libraries(isa_worker
 		hardware_pio
 		hardware_clocks
 		hardware_dma
+		hardware_interp
 		pico_multicore
 		pico_stdio_semihosting
 		pico_stdlib

@@ -13,6 +13,7 @@
 #include <cstring>
 #include "hardware/clocks.h"
 #include "hardware/structs/clocks.h"
+#include "hardware/interp.h"
 
 #include "isa_dma.pio.h"
 
@@ -230,14 +231,30 @@ template <uint32_t OP, auto & device_tbl>
 
 static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 {
-	constexpr uint32_t Yreg = 1; //wr
-	uint32_t TMP, TMP2, TMP3;
-	uint32_t ISA_TRANS, ISA_IDX;
-	uint32_t IORDY = (1u << (PIO_FSTAT_RXEMPTY_LSB + 0));
-	PIO isa_pio = pio0;
+    interp_config cfg0 = interp_default_config();
+    interp_config_set_shift(&cfg0,3);
+    interp_config_set_mask(&cfg0,8-3,15-3);
+    interp_set_config(interp0,0,&cfg0);
+    interp_config cfg1 = interp_default_config();
+    interp_config_set_shift(&cfg1,3);
+    interp_config_set_mask(&cfg1,0,7-3);
+    interp_set_config(interp0,1,&cfg1);
 
-	for (;;)
+    interp0->base[2] = (uint32_t)((void*)io_map);
+
+    for (;;)
 	{
+		constexpr uint32_t Yreg = 1; //wr
+		uint32_t TMP, TMP2, TMP3;
+		uint32_t ISA_TRANS, ISA_IDX;
+
+		PIO isa_pio = pio0;
+
+		interp_hw_t* isa_sio = interp0;
+
+		uint32_t IORDY = (1u << (PIO_FSTAT_RXEMPTY_LSB + 0));
+		uint32_t MEM_ACC = (3u << 22);
+
 
 		// ** Wait until a Control signal is detected **
 		asm volatile goto (
@@ -251,43 +268,56 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 
 				"ldr  %[ISA_TRANS],[%[PIOB],%[PIOR]] \n\t" // read ISA_TRANSACTION from PIO
 
-				"lsr    %[TMP3], %[ISA_TRANS], #(32-8-2)\n\t" // TMP = ISA_TRANS >> (32-2)
-				"cmp    %[TMP3],#0 \n\t"					 // TMP == 0
-				"beq io\n\t" 							// memory_access
+				"tst    %[ISA_TRANS], %[MEM_ACC]\n\t"
+				"bne mem\n\t" 							// memory_access
 
+				"io:\n\t"
+				"str %[ISA_TRANS], [%[SIOB], %[SIO_ACC0]]\n\t"
+				"nop\n\t"
+				"nop\n\t"
+				"ldr  %[TMP],[%[PIOB],%[PIOR]] \n\t" // read ISA_TRANSACTION from PIO
+				"str %[TMP], [%[SIOB], %[SIO_ACC1]]\n\t"
+				"ldr %[TMP2], [%[SIOB], %[SIO_PEEK2]]\n\t"
+				"ldrb %[ISA_IDX],[%[TMP2]]\n\t"	// tmp = io_map[tmp]
+
+				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
+
+				"cmp %[ISA_IDX], #0\n\t"
+				"beq not_us_retry \n\t"
+				"orr  %[ISA_TRANS], %[ISA_TRANS], %[TMP]\n\t"
+				"b %l[ioaction]\n\t"							  // jump to memaction
+
+				"mem:\n\t"
 				"lsl    %[TMP], %[ISA_TRANS], #(4+8)\n\t" // TMP = ISA_TRANS << 4 // eat up flags
 				"lsr    %[TMP], %[TMP], #(32-20+11)\n\t" // TMP = TMP >> (32-20+11) // move so we have page address
 				"ldr %[TMP2], =%[MEMT] \n\t"
 				"ldrb %[ISA_IDX],[%[TMP2],%[TMP]]\n\t"	// tmp = io_map[tmp]
 				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
+				"ldr  %[TMP],[%[PIOB],%[PIOR]] \n\t" // read ISA_TRANSACTION from PIO
 				"cmp %[ISA_IDX], #0\n\t"
 				"beq not_us_retry\n\t"
+				"orr  %[ISA_TRANS], %[ISA_TRANS], %[TMP]\n\t"
 				"b %l[memaction]\n\t" // jump to memaction
 
-				"io:\n\t"
-				"lsl    %[TMP], %[ISA_TRANS], #(4+4+8)\n\t" // TMP = ISA_TRANS << 4 // eat up flags and high address bits
-				"lsr    %[TMP], %[TMP], #(32-16+3)\n\t" // TMP = TMP >> (32-16+3) // move so we have page address
-				"ldr %[TMP2], =%[IOT] \n\t"
-				"ldrb %[ISA_IDX],[%[TMP2],%[TMP]]\n\t"	// tmp = io_map[tmp]
-				"strb    %[ISA_IDX],[%[PIOB],%[PIOT]] \n\t" // pio->txf[0] = pin status;
-				"cmp %[ISA_IDX], #0\n\t"
-				"beq not_us_retry \n\t"
-				"b %l[ioaction]\n\t"							  // jump to memaction
-
 				".ltorg\n\t"
-				:[TMP3]"=l" (TMP3),
+				:
 				 [ISA_TRANS]"=l" (ISA_TRANS),
 				 [ISA_IDX]"=l" (ISA_IDX),
 				 [TMP]"=l" (TMP),
 				 [TMP2]"=l" (TMP2),
 				 [IORDY]"+l" (IORDY),
-				 [PIOB]"+l"(isa_pio)
+				 [MEM_ACC]"+l" (MEM_ACC),
+				 [PIOB]"+l"(isa_pio),
+				 [SIOB]"+l"(isa_sio)
 				:[PIOT]"i" (PIO_TXF0_OFFSET),
 				 [PIOR]"i" (PIO_RXF0_OFFSET),
 				 [MEMT]"i" (mem_map),
 				 [IOT]"i" (io_map),
 				 [Yreg]"i" (Yreg),
-				 [PIOF]"i"(PIO_FSTAT_OFFSET)
+				 [PIOF]"i"(PIO_FSTAT_OFFSET),
+				 [SIO_ACC0]"i"(&static_cast<interp_hw_t*>(0)->accum[0]),
+				 [SIO_ACC1]"i"(&static_cast<interp_hw_t*>(0)->accum[1]),
+				 [SIO_PEEK2]"i"(&static_cast<interp_hw_t*>(0)->peek[2])
 				:"cc"
 				:memaction,
 				 ioaction
