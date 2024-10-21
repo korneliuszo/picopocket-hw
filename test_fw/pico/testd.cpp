@@ -67,13 +67,14 @@ static void io_wrfn(void* obj, uint32_t faddr, uint8_t data)
 	regs.reg[faddr] = data;
 }
 
-static void wait_for_phase_passed(Thread * thread, uint8_t * phase_cntr)
+static volatile void wait_for_phase_passed(Thread * thread, uint8_t * phase_cntr)
 {
-	while (regs.s.phase <= *phase_cntr)
+	uint8_t phase;
+	while ((phase = regs.s.phase) <= *phase_cntr)
 		thread->yield();
-	*phase_cntr = regs.s.phase; //nonatomic!!!
+	*phase_cntr = phase;
 }
-static void start_new_phase(uint8_t * phase_cntr)
+static volatile void start_new_phase(uint8_t * phase_cntr)
 {
 	*phase_cntr+=1;
 	regs.s.phase = *phase_cntr;
