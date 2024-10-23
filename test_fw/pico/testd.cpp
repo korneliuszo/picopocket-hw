@@ -120,15 +120,13 @@ static void testd_task(Thread * thread)
     SetupSingleTransferRXDMA(dma_chan,rx_buff,rx_banner_size);
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // DMA started
-	while(!TC_Triggered())
+	while(dma_channel_is_busy(dma_chan))
 	{
 		thread->yield();
 	}
-	while(dma_channel_is_busy(0))
-	{
-		thread->yield();
-	}
-	regs.s.io_reg = !!(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,rx_banner_size));
+    __compiler_memory_barrier();
+
+	regs.s.io_reg = !(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,rx_banner_size));
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr);
 	// IRQ configured

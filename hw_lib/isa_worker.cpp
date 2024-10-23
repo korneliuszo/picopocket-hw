@@ -17,12 +17,14 @@
 
 #include "isa_dma.pio.h"
 
+uint dma_helper_rd_offset;
+uint dma_helper_wr_offset;
+
 #include <isa_worker.hpp>
 
 constexpr uint isa_bus_sm = 0;            // Warning : HardCoded ISA State Machine number for speed
 
 constexpr uint TC_PIN = 10;
-constexpr uint DRQ_PIN = 19;
 constexpr uint IA0_PIN = 26;
 
 [[gnu::section(".core1")]] volatile uint8_t mem_map[1024*1024/2048]; //2kB resolution - bitfield
@@ -35,9 +37,9 @@ void ISA_Pre_Init()
 	// ************ Pico I/O Pin Initialisation ****************
 	// * Put the I/O in a correct state to avoid PC Crash      *
 
-	gpio_init(DRQ_PIN);
-	gpio_put(DRQ_PIN, 0);
-	gpio_set_dir(DRQ_PIN,true);
+	gpio_init(PIN_DRQ);
+	gpio_put(PIN_DRQ, 0);
+	gpio_set_dir(PIN_DRQ,true);
 
 	//IRQ
 	for(uint pin=IA0_PIN;pin<IA0_PIN+3;pin++)
@@ -57,8 +59,6 @@ static void TC_trigger_IRQ(void)
 {
     if (gpio_get_irq_event_mask(TC_PIN)) {
        gpio_acknowledge_irq(TC_PIN, GPIO_IRQ_EDGE_RISE);
-       if(dma_single_transfer)
-    	   gpio_put(DRQ_PIN, 0); // we assume transfer only ends from PC side
        TC_triggered_val = true;
     }
 }
@@ -75,6 +75,7 @@ bool TC_Triggered()
 
 void SetupSingleTransferTXDMA(uint dma_chan, const volatile uint8_t * buff, size_t len)
 {
+	initialize_dma_rd_pio(pio0);
     dma_channel_config c = dma_channel_get_default_config(dma_chan);
     channel_config_set_read_increment(&c, true);
     channel_config_set_write_increment(&c, false);
@@ -90,11 +91,11 @@ void SetupSingleTransferTXDMA(uint dma_chan, const volatile uint8_t * buff, size
 
     dma_single_transfer = true;
 	TC_triggered_val = false;
-    gpio_put(DRQ_PIN, 1);
 }
 
 void SetupSingleTransferRXDMA(uint dma_chan, volatile uint8_t * buff, size_t len)
 {
+	initialize_dma_wr_pio(pio0);
     dma_channel_config c = dma_channel_get_default_config(dma_chan);
     channel_config_set_read_increment(&c, false);
     channel_config_set_write_increment(&c, true);
@@ -110,7 +111,6 @@ void SetupSingleTransferRXDMA(uint dma_chan, volatile uint8_t * buff, size_t len
 
     dma_single_transfer = true;
 	TC_triggered_val = false;
-    gpio_put(DRQ_PIN, 1);
 }
 
 void ISA_Init()
@@ -244,7 +244,7 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 
     for (;;)
 	{
-		constexpr uint32_t Yreg = 1; //wr
+		constexpr uint32_t Yreg = 2; //rd
 		uint32_t TMP, TMP2, TMP3;
 		uint32_t ISA_TRANS, ISA_IDX;
 

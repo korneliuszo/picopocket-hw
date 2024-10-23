@@ -8,6 +8,7 @@
 .define public PIN_DACK            8
 .define public PIN_AD0             0
 .define public PIN_RD              5
+.define public PIN_DRQ            19
 .define public PIN_SIDE           20
 .define public PIN_RDY            22
 .define public SIDE_AA1_MASK    0x01  //no bitshifts!!
@@ -25,15 +26,16 @@
 .side_set 3 
 
 wait_for_exec: 
-	out Y, 32                   side OPERATION_DATA_PAUSE
 .wrap_target
+	out Y, 32                   side OPERATION_DATA_PAUSE
 wrapper:
 	wait 0 gpio PIN_ATTN        side OPERATION_DATA                [0]
 	// disable outputs
-	nop                         side OPERATION_CONTROL_A19_A16     [1]
-	wait 1 gpio PIN_ATTN        side OPERATION_CONTROL_A19_A16     [1]
+	wait 1 gpio PIN_ATTN        side OPERATION_DATA                [0]
 	// jump if dma
-	jmp pin dma                 side OPERATION_CONTROL_A19_A16     [1]
+	jmp pin wrapper             side OPERATION_DATA                [0]
+	nop                         side OPERATION_CONTROL_A19_A16     [2]
+	nop                         side OPERATION_CONTROL_A19_A16     [2]
 	in pins, 8                  side OPERATION_A15_A8              [2]
 	nop                         side OPERATION_A15_A8              [2]
 	in pins, 8                  side OPERATION_A7_A0               [0]
@@ -45,28 +47,32 @@ wrapper:
 	
 our_dev:
 	out X, 32                   side OPERATION_DATA_PAUSE
-	jmp X!=Y rd                 side OPERATION_DATA_PAUSE
-	jmp wait_for_exec           side OPERATION_DATA_PAUSE
-rd:
+	jmp X!=Y wait_for_exec      side OPERATION_DATA_PAUSE
 	irq clear 6                 side OPERATION_DATA_PAUSE
  	out pins, 8                 side OPERATION_DATA_PAUSE
-	jmp wait_for_exec           side OPERATION_DATA_PAUSE
-dma:
-	// DMA PROC
-	irq clear 7                 side OPERATION_CONTROL_A19_A16 [1]
 .wrap
 
-.program dma_helper
+.program dma_helper_wr
+.side_set 1
 .wrap_target
-wrap:
-	irq wait 7
-	// could be pause here to be safe on fifo not ready
-	jmp pin rd [6]
-	in pins, 8
-	jmp wrap
-rd:
-	irq clear 6
-	out pins, 8
+	wait 1 gpio PIN_DACK side 0x1
+	wait 1 gpio PIN_ATTN side 0x0
+retry:
+	mov x, pins          side 0x0
+	jmp pin retry        side 0x0
+	wait 0 gpio PIN_DACK side 0x0
+	in x,8               side 0x0
+.wrap
+
+.program dma_helper_rd
+.side_set 1
+.wrap_target
+	pull block           side 0x0
+	wait 1 gpio PIN_DACK side 0x1
+	wait 1 gpio PIN_ATTN side 0x0
+	irq clear 6          side 0x0
+	out pins, 8          side 0x0
+	wait 0 gpio PIN_DACK side 0x0
 .wrap
 
 
@@ -75,7 +81,7 @@ rd:
 
 .wrap_target
 	irq wait 6               side 0x0
-	wait 0 gpio PIN_ATTN     side 0xF [0]
+	wait 0 gpio PIN_ATTN     side 0xF
 .wrap
 
 
@@ -88,7 +94,10 @@ rd:
 
 #include <math.h>
 
-static inline void initialize_isa_pio(PIO isa_pio)
+extern uint dma_helper_rd_offset;
+extern uint dma_helper_wr_offset;
+
+static inline int isa_pio_divisor()
 {
 	// COMMON
 	//                                         /- cycles from set side to in muxed bus
@@ -98,7 +107,13 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	//                                         | |       |      /- 74lvc245 Ten
 	//                                         | |       |      |
 	float div = ((float)(clock_get_hz(clk_sys)/6*1))*(6.0e-9+9.e-9);
-	int intdiv = ceil(div);
+	return ceil(div);
+}
+
+static inline void initialize_isa_pio(PIO isa_pio)
+{
+
+	int intdiv = isa_pio_divisor();
 	for (int i = PIN_AD0; i < PIN_AD0 + 8; i++) {
 		pio_gpio_init(isa_pio, i);    // Link the PIN to this PIO (All SM !)
 		gpio_set_slew_rate(i, GPIO_SLEW_RATE_FAST);
@@ -145,20 +160,13 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	//pio_sm_exec(isa_pio, 0, pio_encode_set(pio_y,1));
 	// DMA
 
-	uint dma_helper_offset = pio_add_program(isa_pio, &dma_helper_program);
-	pio_sm_config dma_helper = dma_helper_program_get_default_config(dma_helper_offset);
-	
-	sm_config_set_clkdiv_int_frac(&dma_helper, intdiv,0);
-	sm_config_set_in_shift(&dma_helper, false /* not tested */, true /* autopush */, 8);
-	sm_config_set_out_shift(&dma_helper, true /* not tested */, true /* autopull */, 8);
-	
-	sm_config_set_in_pins(&dma_helper, PIN_AD0);
-	sm_config_set_out_pins(&dma_helper, PIN_AD0, 8);
-		
-	sm_config_set_jmp_pin(&dma_helper,PIN_RD);
+	dma_helper_rd_offset = pio_add_program(isa_pio, &dma_helper_rd_program);
+	dma_helper_wr_offset = pio_add_program(isa_pio, &dma_helper_wr_program);
 
-	pio_sm_init(isa_pio, 1, dma_helper_offset, &dma_helper);
-	
+	pio_gpio_init(isa_pio,PIN_DRQ);
+	gpio_set_slew_rate(PIN_DRQ, GPIO_SLEW_RATE_FAST);
+	pio_sm_set_consecutive_pindirs(isa_pio, 1, PIN_DRQ, 1, true);
+
 	// PINDIR HELPERS
 
 	uint pindir_helper_offset = pio_add_program(isa_pio, &pindir_helper_program);
@@ -177,7 +185,46 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	
 	//enable all
 	
-	pio_enable_sm_mask_in_sync(isa_pio, 0xf);
+	pio_enable_sm_mask_in_sync(isa_pio, 0xd);
+}
+
+static inline void initialize_dma_rd_pio(PIO isa_pio)
+{
+	int intdiv = isa_pio_divisor();
+
+	pio_sm_set_enabled(isa_pio,1,false);
+
+	pio_sm_config dma_helper = dma_helper_rd_program_get_default_config(dma_helper_rd_offset);
+	
+	sm_config_set_clkdiv_int_frac(&dma_helper, intdiv,0);
+	sm_config_set_out_shift(&dma_helper, false, false /* autopull */, 8);
+	sm_config_set_out_pins(&dma_helper, PIN_AD0, 8);
+	sm_config_set_fifo_join(&dma_helper,PIO_FIFO_JOIN_TX);
+		
+	sm_config_set_sideset_pins(&dma_helper, PIN_DRQ);
+
+	pio_sm_init(isa_pio, 1, dma_helper_rd_offset, &dma_helper);
+	pio_sm_set_enabled(isa_pio,1,true);
+}
+
+static inline void initialize_dma_wr_pio(PIO isa_pio)
+{
+	int intdiv = isa_pio_divisor();
+
+	pio_sm_set_enabled(isa_pio,1,false);
+
+	pio_sm_config dma_helper = dma_helper_wr_program_get_default_config(dma_helper_wr_offset);
+	
+	sm_config_set_clkdiv_int_frac(&dma_helper, intdiv,0);
+	sm_config_set_in_shift(&dma_helper, false, true /* autopush */, 8);
+	sm_config_set_in_pins(&dma_helper, PIN_AD0);
+	sm_config_set_fifo_join(&dma_helper,PIO_FIFO_JOIN_RX);
+		
+	sm_config_set_sideset_pins(&dma_helper, PIN_DRQ);
+	sm_config_set_jmp_pin(&dma_helper,PIN_ATTN);
+
+	pio_sm_init(isa_pio, 1, dma_helper_wr_offset, &dma_helper);
+	pio_sm_set_enabled(isa_pio,1,true);
 }
 
 %}
