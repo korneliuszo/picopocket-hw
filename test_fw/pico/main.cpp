@@ -22,7 +22,7 @@
 #include "jmpcoro.hpp"
 #include "testd.hpp"
 
-constexpr uint32_t PICO_Freq=380; //PM_SYS_CLK;
+constexpr uint32_t PICO_Freq=250; //PM_SYS_CLK;
 
 
 int main(void)

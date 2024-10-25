@@ -35,12 +35,12 @@ wrapper:
 	// jump if dma
 	jmp pin wrapper             side OPERATION_DATA                [0]
 	nop                         side OPERATION_CONTROL_A19_A16     [2]
-	nop                         side OPERATION_CONTROL_A19_A16     [2]
+	nop                         side OPERATION_CONTROL_A19_A16     [0]
 	in pins, 8                  side OPERATION_A15_A8              [2]
-	nop                         side OPERATION_A15_A8              [2]
+	nop                         side OPERATION_A15_A8              [0]
 	in pins, 8                  side OPERATION_A7_A0               [0]
-  	in null, 8                  side OPERATION_A7_A0               [2]
-	in null,16                  side OPERATION_A7_A0               [1]
+  	in null, 8                  side OPERATION_A7_A0               [1]
+	in null,16                  side OPERATION_A7_A0               [0]
 	in pins, 8                  side OPERATION_DATA
 	out X, 32                   side OPERATION_DATA
 	jmp !X wrapper              side OPERATION_DATA
@@ -106,7 +106,7 @@ static inline int isa_pio_divisor()
 	//                                         | |       /- 74lvc139 Tpd 
 	//                                         | |       |      /- 74lvc245 Ten
 	//                                         | |       |      |
-	float div = ((float)(clock_get_hz(clk_sys)/6*1))*(6.0e-9+9.e-9);
+	float div = ((float)(clock_get_hz(clk_sys)/4*1))*(6.0e-9+9.e-9);
 	return ceil(div);
 }
 

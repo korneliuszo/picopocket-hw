@@ -9,7 +9,7 @@
 #define FW_BOARD_H_
 
 // setting first overrides the value in the default header
-#define PICO_FLASH_SPI_CLKDIV 8
+#define PICO_FLASH_SPI_CLKDIV 4
 
 #define PSRAM_PIN_CS 13
 #define PSRAM_PIN_SCK 14
@@ -29,7 +29,7 @@
 #define AUDIO_PIO 1
 #define AUDIO_DMA_IRQN 0
 
-#define CYW43_PIO_CLOCK_DIV 6
+#define CYW43_PIO_CLOCK_DIV 3
 
 // pick up the rest of the settings
 #include "boards/pico_w.h"
