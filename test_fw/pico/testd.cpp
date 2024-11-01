@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: MIT
  */
 #include "isa_worker.hpp"
+#ifndef PICOPOCKET_SIM
 #include "hardware/dma.h"
 #include "pico/time.h"
+#else
+#include <unistd.h>
+#endif
 #include <string.h>
 #include "testd.hpp"
 #include "psram_pio.hpp"
@@ -16,6 +20,7 @@
 
 extern "C" const uint8_t _binary_optionrom_bin_start[];
 extern "C" const uint8_t _binary_optionrom_bin_size[];
+extern "C" const uint8_t _binary_optionrom_bin_end[];
 
 extern "C" const uint8_t _binary_banner_bin_start[];
 extern "C" const uint8_t _binary_banner_bin_end[];
@@ -87,7 +92,7 @@ static void testd_task(Thread * thread)
 {
 	add_device({
 					.start = 0xDC000,
-					.size = (uint32_t)_binary_optionrom_bin_size,
+					.size = (uint32_t)(size_t)(_binary_optionrom_bin_end-_binary_optionrom_bin_start),
 					.type = Device::Type::MEM,
 					.rdfn = read_fn,
 					.wrfn = nop_wrfn,
@@ -109,8 +114,12 @@ static void testd_task(Thread * thread)
 	wait_for_phase_passed(thread,&phase_cntr); // DMA TEST
 
 	//prepare write DMA
+#ifndef PICOPOCKET_SIM
     uint dma_chan = dma_claim_unused_channel(true);
-    SetupSingleTransferTXDMA(dma_chan,(uint8_t*)_binary_banner_bin_start,(size_t)_binary_banner_bin_size);
+#else
+    uint dma_chan = 0;
+#endif
+    SetupSingleTransferTXDMA(dma_chan,(uint8_t*)_binary_banner_bin_start,(size_t)(_binary_banner_bin_end-_binary_banner_bin_start));
 	start_new_phase(&phase_cntr); // continue work on 386
 	// DMA Transfer
 	wait_for_phase_passed(thread,&phase_cntr); // DMA done
@@ -120,11 +129,13 @@ static void testd_task(Thread * thread)
     SetupSingleTransferRXDMA(dma_chan,rx_buff,rx_banner_size);
 	start_new_phase(&phase_cntr); // continue work on 386
 	wait_for_phase_passed(thread,&phase_cntr); // DMA started
-	while(dma_channel_is_busy(dma_chan))
+	while(!DMA_Complete(dma_chan))
 	{
 		thread->yield();
 	}
+#ifndef PICOPOCKET_SIM
     __compiler_memory_barrier();
+#endif
 
 	regs.s.io_reg = !(memcmp((uint8_t*)_binary_banner_bin_start,(uint8_t*)rx_buff,rx_banner_size));
 	start_new_phase(&phase_cntr); // continue work on 386
@@ -141,21 +152,29 @@ static void testd_task(Thread * thread)
 		regs.s.irr = 0; //restore first arrived
 		regs.s.isr = 0;
 		IRQ_Set(irq_handle,true);
+#ifndef PICOPOCKET_SIM
 		uint32_t timeout = to_ms_since_boot(get_absolute_time()) + 500;
 		while((to_ms_since_boot(get_absolute_time())<timeout) && !regs.s.io_reg)
 			thread->yield();
+#else
+		usleep(500000);
+#endif
 		IRQ_Set(irq_handle,false);
 		uint16_t irr = regs.s.irr; //latch first arrived
 		uint16_t isr = regs.s.isr;
 		regs.s.io_reg = 0;
 
+#ifndef PICOPOCKET_SIM
 		timeout = to_ms_since_boot(get_absolute_time()) + 500;
 		while((to_ms_since_boot(get_absolute_time())<timeout))
 		{ // eat up late
 			thread->yield();
 			regs.s.io_reg = 0;
 		}
-
+#else
+		usleep(500000);
+		regs.s.io_reg = 0;
+#endif
 		regs.s.irr = irr; //restore first arrived
 		regs.s.isr = isr;
 

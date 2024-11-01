@@ -36,6 +36,7 @@ add_dependencies(S16LE2_44100 S16LE2_44100_obj)
 
 target_include_directories(test_tusb INTERFACE tusb)
 
+if(NOT PICOPOCKET_SIM)
 add_executable(test
 	main.cpp 
 	usb_descriptors.c
@@ -63,3 +64,18 @@ target_link_libraries(test PRIVATE
 	audio_dma
 	S16LE2_44100
 )
+else()
+	
+add_executable(test
+	main.cpp 
+	testd.cpp
+)
+	
+target_link_libraries(test PRIVATE
+	isa_worker
+	optionrom
+	banner
+	jmpcoro
+	S16LE2_44100
+)	
+endif()

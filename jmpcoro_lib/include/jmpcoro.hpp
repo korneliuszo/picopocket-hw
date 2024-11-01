@@ -84,6 +84,19 @@ protected:
 		}
 		this->prepare_run(from);
 		TCB * to_register = this;
+#if defined(__x86_64__) // NO FP
+		asm volatile (
+				"mov %[SP],%%rsp\n\t"
+				"mov %[TO_PTR],%%rdi\n\t"
+				"call *%[ENTRY]\n\t"
+			:[TO_PTR]"+r" (to_register)
+			:[SP]"r" (_sp),
+			 [ENTRY]"r"(_entry)
+			:"memory", "rax", "rcx", "rdx", "rsi", "rdi", "r8",
+			 "r9", "r10", "r11"//call clobbers that
+		);
+
+#else
 		asm volatile (
 				"mov sp, %[SP]\n\t"
 				"mov r0, %[TO_PTR]\n\t"
@@ -93,6 +106,7 @@ protected:
 			 [ENTRY]"l"(_entry)
 			:"memory", "r0", "r1", "r2", "r3", "ip", "lr" //call clobbers that
 		);
+#endif
 		longjmp(*to_register->finalize_run__provide_next()->spc,1); //as we cannot guarantee as from thread still works
 	};
 };

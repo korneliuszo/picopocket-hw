@@ -6,7 +6,9 @@
 #pragma once
 
 #include <stdint.h>
-#include "pico/types.h"
+#include <stddef.h>
+
+typedef unsigned int uint;
 
 void ISA_Pre_Init();
 void ISA_Init();

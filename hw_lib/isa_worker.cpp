@@ -113,6 +113,11 @@ void SetupSingleTransferRXDMA(uint dma_chan, volatile uint8_t * buff, size_t len
 	TC_triggered_val = false;
 }
 
+bool DMA_Complete(uint dma_chan)
+{
+	return !dma_channel_is_busy(dma_chan);
+}
+
 void ISA_Init()
 {
 	//TC line
