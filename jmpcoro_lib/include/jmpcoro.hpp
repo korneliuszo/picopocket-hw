@@ -114,14 +114,14 @@ protected:
 
 template<class Thread, int STACK_LEN>
 class StaticThread: public Thread {
-    volatile int stack[STACK_LEN];
+	volatile int  stack[STACK_LEN];
 public:
     template<class ... ARGS>
     StaticThread(ARGS ... args) : Thread(args ...){};
 
     void run(Thread * from, typename Thread::ENTRY _entry)
 	{
-    	Thread::run(from, &stack[STACK_LEN-1], _entry);
+    	Thread::run(from, &stack[(STACK_LEN-1)/0x20*0x20-0x22], _entry);
 	}
 };
 
