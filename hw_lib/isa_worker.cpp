@@ -131,7 +131,7 @@ void ISA_Init()
 
 struct Device_int
 {
-	uint32_t mask = 0;
+	uint32_t start;
 	uint32_t (*rdfn)(void*, uint32_t);
 	void (*wrfn)(void*, uint32_t,uint8_t);
 	void * obj;
@@ -161,7 +161,7 @@ bool add_device(const Device & device)
 		{
 			devices_mem[used_devices_mem] =
 			{
-					.mask = (device.size-1),
+					.start = device.start,
 					.rdfn = device.rdfn,
 					.wrfn = device.wrfn,
 					.obj = device.obj,
@@ -180,7 +180,7 @@ bool add_device(const Device & device)
 		{
 			devices_io[used_devices_io] =
 			{
-					.mask = (device.size-1),
+					.start = device.start,
 					.rdfn = device.rdfn,
 					.wrfn = device.wrfn,
 					.obj = device.obj,
@@ -201,17 +201,17 @@ bool add_device(const Device & device)
 }
 
 
-template <uint32_t OP, auto & device_tbl>
+template <uint32_t OP, auto & device_tbl, uint32_t MASK>
 [[gnu::always_inline]] static inline void do_transfer(const uint32_t idx, const uint32_t &ISA_TRANS)
 {
 	PIO isa_pio = pio0;
-	uint32_t FADDR = ISA_TRANS;
+	uint32_t FADDR = ISA_TRANS & MASK;
 	auto && dev = device_tbl[idx-1];
 
 	if(ISA_TRANS&OP)
 	{ // READ
 		uint32_t datard;
-		datard = dev.rdfn(dev.obj,FADDR & (dev.mask));
+		datard = dev.rdfn(dev.obj,FADDR - (dev.start));
 		if(datard!=0xffffffff)
 		{
 			pio_sm_put(isa_pio,0,2);
@@ -227,7 +227,7 @@ template <uint32_t OP, auto & device_tbl>
 	{
 		pio_sm_put(isa_pio,0,1);
 		uint8_t data = gpio_get_all()>>PIN_AD0;
-		dev.wrfn(dev.obj,FADDR & (dev.mask),data);
+		dev.wrfn(dev.obj,FADDR - (dev.start),data);
 		return;
 	}
 
@@ -331,11 +331,11 @@ static void __scratch_x("core1_code") [[gnu::noreturn]] main_core1(void)
 		continue;
 
 		memaction:
-		do_transfer<MEM_RD,devices_mem>(ISA_IDX,ISA_TRANS);
+		do_transfer<MEM_RD,devices_mem,0xFFFFF>(ISA_IDX,ISA_TRANS);
 		continue;
 
 		ioaction:
-		do_transfer<IO_RD,devices_io>(ISA_IDX,ISA_TRANS);
+		do_transfer<IO_RD,devices_io,0xFFFF>(ISA_IDX,ISA_TRANS);
 		continue;
 	}
 }
