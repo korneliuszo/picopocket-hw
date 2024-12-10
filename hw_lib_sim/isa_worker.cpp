@@ -308,7 +308,7 @@ static void* ISA_comm(void* arg)
         	int rlen = recv(accept_socket_fd,rbuff,32,0);
         	if((rlen == -1) && ((errno == EAGAIN) || (errno == EWOULDBLOCK)))
         		continue;
-        	if (rlen <0)
+        	if (rlen <=0)
         	{
         		break;
         	}
