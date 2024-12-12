@@ -8,6 +8,7 @@
 #include "pico/types.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
+#include "hardware/dma.h"
 
 namespace PSRAM {
 
@@ -16,7 +17,7 @@ namespace PSRAM {
 namespace PIO_Selector{
 
 	template<uint>
-	volatile PIO PIOPort();
+	static volatile PIO PIOPort();
 	template<>
     volatile PIO PIOPort<0>() {
         return reinterpret_cast<PIO>(PIO0_BASE);
