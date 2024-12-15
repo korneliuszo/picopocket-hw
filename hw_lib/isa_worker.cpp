@@ -147,6 +147,7 @@ constexpr uint32_t IO_WR = (1<<(20+8+0-8));
 std::array<Device_int,4> devices_mem = {};
 std::array<Device_int,4> devices_io = {};
 
+std::atomic<bool> wait_for_flash;
 
 size_t used_devices_mem = 0;
 size_t used_devices_io = 0;
@@ -211,6 +212,7 @@ template <uint32_t OP, auto & device_tbl, uint32_t MASK>
 	if(ISA_TRANS&OP)
 	{ // READ
 		uint32_t datard;
+		while(wait_for_flash);
 		datard = dev.rdfn(dev.obj,FADDR - (dev.start));
 		if(datard!=0xffffffff)
 		{
@@ -227,6 +229,7 @@ template <uint32_t OP, auto & device_tbl, uint32_t MASK>
 	{
 		pio_sm_put(isa_pio,0,1);
 		uint8_t data = gpio_get_all()>>PIN_AD0;
+		while(wait_for_flash);
 		dev.wrfn(dev.obj,FADDR - (dev.start),data);
 		return;
 	}

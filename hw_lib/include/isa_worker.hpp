@@ -7,9 +7,12 @@
 
 #include <stdint.h>
 #include "pico/types.h"
+#include <atomic>
 
 void ISA_Pre_Init();
 void ISA_Init();
+
+extern std::atomic<bool> wait_for_flash;
 
 constexpr uint32_t ISA_FAKE_READ = 1<<31;
 
