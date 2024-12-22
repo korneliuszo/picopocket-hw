@@ -14,6 +14,7 @@
 #include "hardware/clocks.h"
 #include "hardware/structs/clocks.h"
 #include "hardware/interp.h"
+#include "hardware/sync.h"
 
 #include "isa_dma.pio.h"
 
@@ -31,6 +32,8 @@ constexpr uint IA0_PIN = 26;
 [[gnu::section(".core1")]] volatile uint8_t io_map[64*1024/8]; //8 IO regs resolution
 
 volatile bool dma_single_transfer;
+
+critical_section_t IRQ_setter;
 
 void ISA_Pre_Init()
 {
@@ -51,6 +54,7 @@ void ISA_Pre_Init()
 
 	memset((void*)mem_map,0,sizeof(mem_map));
 	memset((void*)io_map,0,sizeof(io_map));
+	critical_section_init(&IRQ_setter);
 }
 
 volatile bool TC_triggered_val;
@@ -355,8 +359,8 @@ struct IRQh {
 
 static constexpr size_t IRQh_len = 10;
 
-static IRQh irqhandlers[IRQh_len];
-static size_t IRQh_used;
+static volatile IRQh irqhandlers[IRQh_len];
+static volatile size_t IRQh_used;
 
 void IRQ_Handle_Change_IRQ(uint8_t irqh,uint8_t irq)
 {
@@ -402,6 +406,7 @@ void IRQ_Set(uint8_t irqh, bool val)
 {
 	if(irqh >= IRQh_used)
 		return;
+	critical_section_enter_blocking(&IRQ_setter);
 	irqhandlers[irqh].lit = val;
 	uint8_t orirq = 0;
 	for(size_t i=0;i<IRQh_used;i++) // first handler prioritized
@@ -412,7 +417,7 @@ void IRQ_Set(uint8_t irqh, bool val)
 			break;
 		}
 	}
-
 	gpio_put_masked(7<<IA0_PIN,orirq<<IA0_PIN);
+	critical_section_exit(&IRQ_setter);
 }
 
