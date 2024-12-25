@@ -218,14 +218,14 @@ template <uint32_t OP, auto & device_tbl, uint32_t MASK>
 		uint32_t datard;
 		while(wait_for_flash);
 		datard = dev.rdfn(dev.obj,FADDR - (dev.start));
-		if(datard!=0xffffffff)
+		if(datard&ISA_FAKE_READ)
 		{
-			pio_sm_put(isa_pio,0,2);
-			pio_sm_put(isa_pio,0,datard);
+			pio_sm_put(isa_pio,0,1);
 		}
 		else
 		{
-			pio_sm_put(isa_pio,0,1);
+			pio_sm_put(isa_pio,0,2);
+			pio_sm_put(isa_pio,0,datard);
 		}
 		return;
 	}
