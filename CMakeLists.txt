@@ -10,8 +10,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/pico-sdk/pico_sdk_init.cmake)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 
 project(hw_lib C CXX ASM)
-set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards)
-set(PICO_BOARD board)
+set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards ${PICO_BOARD_HEADER_DIRS})
+if(NOT ${PICO_BOARD})
+#set(PICO_BOARD board)
+endif()
 
 set(PICO_CYW43_SUPPORTED "1")
 pico_register_common_scope_var(PICO_CYW43_SUPPORTED)
