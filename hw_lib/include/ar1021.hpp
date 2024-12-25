@@ -284,5 +284,10 @@ public:
 
 #if defined(TOUCH_PIN_CS)
 using AR1021 = AR1021_Impl<TOUCH_PIN_MISO,TOUCH_PIN_MOSI,TOUCH_PIN_SCK,TOUCH_PIN_CS,TOUCH_PIO>;
+#else
+class AR1021 {
+public:
+	static void init() {};
+};
 #endif
 };
