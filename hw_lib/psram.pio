@@ -24,7 +24,7 @@ rloopx:
 wait_for_tx:
 	nop                    side 0b00 [1] ;t_CHD end
 PUBLIC entry:
-	nop                    side 0b01
+	nop                    side 0b01 [1]
 	out y,32           ;no side
 	out x,32           ;no side
 	nop                    side 0b00    ;t_CSP start

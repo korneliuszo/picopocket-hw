@@ -178,9 +178,14 @@ public:
 		PSRAM_Completion() :completion_dma_chan(0xff){};
 		PSRAM_Completion(int dma_chan) :completion_dma_chan(dma_chan){};
 	public:
-		bool complete_trigger()
+		bool complete_trigger() volatile
 		{
-			return !dma_channel_is_busy(completion_dma_chan);
+			if(!dma_channel_is_busy(completion_dma_chan))
+			{
+			    __compiler_memory_barrier();
+				return true;
+			}
+			return false;
 		}
 	};
 
@@ -199,6 +204,7 @@ public:
 	    dma_channel_set_read_addr(write_dma_chan,cmd_buff,false);
 	    dma_channel_set_trans_count(write_dma_chan,(waitcycle?5:4),false);
 	    dma_channel_transfer_from_buffer_now(cfg_dma_chan, cfg, 2);
+	    dma_channel_wait_for_finish_blocking(cfg_dma_chan);
 	    dma_channel_wait_for_finish_blocking(write_dma_chan);
 	    return {read_dma_chan};
 	}
