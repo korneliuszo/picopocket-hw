@@ -28,6 +28,8 @@ public:
 	void disconnect() {
 		next->prev = prev;
 		prev->next = next;
+		prev = static_cast<CRTP*>(this);
+		next = static_cast<CRTP*>(this);
 	}
 };
 
