@@ -10,6 +10,7 @@
 #include "hardware/clocks.h"
 #include "hardware/dma.h"
 #include <atomic>
+#include <stdint.h>
 
 namespace AudioDMA {
 
@@ -33,15 +34,16 @@ template <uint PIN_DIN,uint PIN_BCK,uint PIN_LRCK, uint PION, uint IRQN>
 class AudioDMA_Impl {
 	static_assert(PIN_BCK + 1 == PIN_LRCK);
 
-	static inline int ping_dma_chan;
-	static inline int pong_dma_chan;
-
 	static inline uint pio_sm;
 
-	static constexpr size_t DMA_BYTE_LEN = 64;
 
 	AudioDMA_Impl() = delete;
 public:
+
+	static constexpr size_t DMA_BYTE_LEN = 64;
+
+	static inline int ping_dma_chan;
+	static inline int pong_dma_chan;
 
 	static void init()
 	{
@@ -86,6 +88,29 @@ public:
 	    dma_channel_set_trans_count(dma_chan, DMA_BYTE_LEN/4, false);
 	    dma_channel_set_config(dma_chan, &cfg_dma_chan_config, false);
 	    dma_irqn_set_channel_enabled(IRQN, dma_chan, 1);
+	}
+
+	static void setup_dma_const(int dma_chan, int next_dma_chan, uint32_t * val)
+	{
+		volatile PIO pio = PIO_Selector::PIOPort<PION>();
+		dma_channel_config cfg_dma_chan_config = dma_channel_get_default_config(dma_chan);
+	    channel_config_set_transfer_data_size(&cfg_dma_chan_config, DMA_SIZE_32);
+	    channel_config_set_read_increment(&cfg_dma_chan_config, false);
+	    channel_config_set_write_increment(&cfg_dma_chan_config, false);
+	    channel_config_set_dreq(&cfg_dma_chan_config, pio_get_dreq(pio, pio_sm, true));
+	    channel_config_set_chain_to(&cfg_dma_chan_config, next_dma_chan);
+	    dma_channel_set_config(dma_chan, &cfg_dma_chan_config, false);
+	    channel_config_set_chain_to(&cfg_dma_chan_config, dma_chan);
+	    dma_channel_set_config(next_dma_chan, &cfg_dma_chan_config, false);
+
+	    dma_channel_set_write_addr(dma_chan, &pio->txf[pio_sm], false);
+	    dma_channel_set_read_addr(dma_chan, val, false);
+	    dma_channel_set_trans_count(dma_chan, DMA_BYTE_LEN/4, false);
+
+	    dma_channel_set_write_addr(next_dma_chan, &pio->txf[pio_sm], false);
+	    dma_channel_set_read_addr(next_dma_chan, val, false);
+	    dma_channel_set_trans_count(next_dma_chan, DMA_BYTE_LEN/4, false);
+
 	}
 
 	static void setup_dma_stop(int dma_chan)
@@ -159,7 +184,7 @@ public:
 	class Single_playback
 	{
 		static inline std::atomic<const int16_t*> buff;
-		static inline std::atomic<ssize_t> rem_len;
+		static inline std::atomic<ptrdiff_t> rem_len;
 
 		Single_playback() = delete;
 
@@ -178,6 +203,41 @@ public:
 		{
 			buff = _buff;
 			rem_len = byte_len;
+			update_pio_frequency(sample_rate);
+			stopped = false;
+			const int16_t* ibuff = get_buff(DMA_BYTE_LEN);
+			assert(ibuff);
+			setup_dma_cont(ibuff,ping_dma_chan,pong_dma_chan);
+			ibuff = get_buff(DMA_BYTE_LEN);
+			if(ibuff)
+			{
+				setup_dma_cont(ibuff,pong_dma_chan,ping_dma_chan);
+				stopping = false;
+			}
+			else
+			{
+				setup_dma_stop(pong_dma_chan);
+				stopping = true;
+			}
+			irq_add_shared_handler(DMA_IRQ_0+IRQN,&isr<get_buff>,PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+		    dma_irqn_set_channel_enabled(IRQN, ping_dma_chan, 1);
+		    dma_irqn_set_channel_enabled(IRQN, pong_dma_chan, 1);
+		    dma_channel_acknowledge_irq0(ping_dma_chan);
+		    dma_channel_acknowledge_irq0(pong_dma_chan);
+		    irq_set_enabled(DMA_IRQ_0+IRQN, true);
+		    dma_channel_start(ping_dma_chan);
+		}
+		static bool is_complete()
+		{
+			return stopped;
+		}
+	};
+
+	template<const int16_t* (*get_buff)(size_t req_buff)>
+	class GetbuffISR_playback {
+	public:
+		static void init_playback(const uint32_t sample_rate)
+		{
 			update_pio_frequency(sample_rate);
 			stopped = false;
 			const int16_t* ibuff = get_buff(DMA_BYTE_LEN);
