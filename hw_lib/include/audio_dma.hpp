@@ -133,7 +133,7 @@ public:
 	static inline std::atomic<bool> stopped; //isr context
 
 	template<const int16_t* (*get_buff)(size_t req_buff)>
-	static void isr()
+	static void __not_in_flash_func(isr)()
 	{
 		if (dma_irqn_get_channel_status(IRQN, ping_dma_chan)) {
 			if(stopping)

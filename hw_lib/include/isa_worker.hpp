@@ -42,3 +42,7 @@ bool DMA_Complete(uint dma_chan);
 //has been ..
 bool TC_Triggered();
 
+
+void DMA_RX_Setup();
+bool DMA_RX_is_ready();
+uint8_t DMA_RX_get();

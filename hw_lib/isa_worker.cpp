@@ -122,6 +122,21 @@ bool DMA_Complete(uint dma_chan)
 	return !dma_channel_is_busy(dma_chan);
 }
 
+void DMA_RX_Setup()
+{
+	initialize_dma_wr_pio(pio0);
+}
+
+bool __not_in_flash_func(DMA_RX_is_ready)()
+{
+	return ! pio_sm_is_rx_fifo_empty(pio0,1);
+}
+
+uint8_t __not_in_flash_func(DMA_RX_get)()
+{
+	return pio_sm_get(pio0,1);
+}
+
 void ISA_Init()
 {
 	//TC line
