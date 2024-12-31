@@ -5,12 +5,15 @@
  */
 #pragma once
 
+#include "pico.h"
 #include "pico/types.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "hardware/dma.h"
+#include "hardware/structs/systick.h"
 #include <atomic>
 #include <stdint.h>
+#include <algorithm>
 
 namespace AudioDMA {
 
@@ -132,9 +135,15 @@ public:
 	static inline std::atomic<bool> stopping; //isr context
 	static inline std::atomic<bool> stopped; //isr context
 
+	static inline volatile uint32_t isr_time_taken = 0xffffffff;
+
 	template<const int16_t* (*get_buff)(size_t req_buff)>
 	static void __not_in_flash_func(isr)()
 	{
+		//                (corekHz) ( kHz isr  )
+		systick_hw->cvr = 0;
+		systick_hw->rvr = (250000 )/(384/(64/4));
+		systick_hw->csr |= 0x5; //enable+cpusource
 		if (dma_irqn_get_channel_status(IRQN, ping_dma_chan)) {
 			if(stopping)
 			{
@@ -179,6 +188,9 @@ public:
 			}
 			dma_irqn_acknowledge_channel(IRQN, pong_dma_chan);
 		}
+		systick_hw->csr &= ~0x1;//disable
+		//isr_time_taken = std::min(systick_hw->cvr,isr_time_taken);
+		isr_time_taken = systick_hw->cvr;
 	}
 
 	class Single_playback
