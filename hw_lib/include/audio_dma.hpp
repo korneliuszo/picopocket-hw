@@ -19,13 +19,13 @@ namespace AudioDMA {
 namespace PIO_Selector{
 
 	template<uint>
-	volatile PIO PIOPort();
+	inline volatile PIO PIOPort();
 	template<>
-    volatile PIO PIOPort<0>() {
+	inline volatile PIO PIOPort<0>() {
         return reinterpret_cast<PIO>(PIO0_BASE);
     }
 	template<>
-    volatile PIO PIOPort<1>() {
+	inline volatile PIO PIOPort<1>() {
         return reinterpret_cast<PIO>(PIO1_BASE);
     }
 };
