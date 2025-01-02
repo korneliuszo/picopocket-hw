@@ -35,6 +35,14 @@ volatile bool dma_single_transfer;
 
 critical_section_t IRQ_setter;
 
+[[gnu::constructor]]
+void init_iordy()
+{
+	gpio_init(PIN_RDY);
+	gpio_put(PIN_RDY, 1);
+	gpio_set_dir(PIN_RDY,true);
+}
+
 void ISA_Pre_Init()
 {
 	// ************ Pico I/O Pin Initialisation ****************

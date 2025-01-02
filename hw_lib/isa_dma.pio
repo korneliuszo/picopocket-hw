@@ -125,6 +125,10 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	gpio_set_slew_rate(PIN_SIDE+0, GPIO_SLEW_RATE_FAST);
 	pio_gpio_init(isa_pio,PIN_SIDE+1);
 	gpio_set_slew_rate(PIN_SIDE+1, GPIO_SLEW_RATE_FAST);
+	
+	pio_sm_set_consecutive_pindirs(isa_pio, 0, PIN_RDY, 1, true);
+	pio_sm_set_pins_with_mask(isa_pio,0, 1<<PIN_RDY,1<<PIN_RDY);
+	
 	pio_gpio_init(isa_pio,PIN_SIDE+2);
 	gpio_set_slew_rate(PIN_SIDE+2, GPIO_SLEW_RATE_FAST);
 	
