@@ -9,7 +9,7 @@
 #define FW_BOARD_H_
 
 // setting first overrides the value in the default header
-#define PICO_FLASH_SPI_CLKDIV 4
+#define PICO_FLASH_SPI_CLKDIV 6
 
 #define PSRAM_PIN_CS 13
 #define PSRAM_PIN_SCK 14
