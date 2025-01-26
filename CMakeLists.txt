@@ -31,5 +31,6 @@ add_subdirectory(jmpcoro_lib)
 
 if(PROJECT_IS_TOP_LEVEL)
   add_subdirectory(test_fw)
+  add_subdirectory(tracer)
 endif()
 
