@@ -96,6 +96,7 @@ public:
 	    channel_config_set_write_increment(&write_dma_chan_config, false);
 	    channel_config_set_dreq(&write_dma_chan_config, pio_get_dreq(pio, sm_no, true));
 	    dma_channel_set_write_addr(write_dma_chan, &pio->txf[sm_no], false);
+	    channel_config_set_high_priority(&write_dma_chan_config,true);
 	    dma_channel_set_config(write_dma_chan, &write_dma_chan_config, false);
 
 	    // config DMA channel setup
@@ -107,6 +108,7 @@ public:
 	    channel_config_set_dreq(&cfg_dma_chan_config, pio_get_dreq(pio, sm_no, true));
 	    channel_config_set_chain_to(&cfg_dma_chan_config, write_dma_chan);
 	    dma_channel_set_write_addr(cfg_dma_chan, &pio->txf[sm_no], false);
+	    channel_config_set_high_priority(&cfg_dma_chan_config,true);
 	    dma_channel_set_config(cfg_dma_chan, &cfg_dma_chan_config, false);
 
 	    // Read DMA channel setup
@@ -117,6 +119,7 @@ public:
 	    channel_config_set_write_increment(&read_dma_chan_config, true);
 	    channel_config_set_dreq(&read_dma_chan_config, pio_get_dreq(pio, sm_no, false));
 	    dma_channel_set_read_addr(read_dma_chan, &pio->rxf[sm_no], false);
+	    channel_config_set_high_priority(&read_dma_chan_config,true);
 	    dma_channel_set_config(read_dma_chan, &read_dma_chan_config, false);
 
 		uint8_t reset_en = 0x66;
