@@ -35,12 +35,12 @@ wrapper:
 	// jump if dma
 	jmp pin wrapper             side OPERATION_DATA                [0]
 	nop                         side OPERATION_CONTROL_A19_A16     [2]
-	nop                         side OPERATION_CONTROL_A19_A16     [0]
+	in null, 8                  side OPERATION_CONTROL_A19_A16     [0]
 	in pins, 8                  side OPERATION_A15_A8              [2]
 	nop                         side OPERATION_A15_A8              [0]
 	in pins, 8                  side OPERATION_A7_A0               [0]
   	in null, 8                  side OPERATION_A7_A0               [1]
-	in null,16                  side OPERATION_A7_A0               [0]
+	in null,24                  side OPERATION_A7_A0               [0]
 	in pins, 8                  side OPERATION_DATA
 	out X, 32                   side OPERATION_DATA
 	jmp !X wrapper              side OPERATION_DATA
@@ -142,9 +142,9 @@ static inline void initialize_isa_pio(PIO isa_pio)
 	
 	sm_config_set_clkdiv_int_frac(&isa_bus, intdiv,0);
 		
-	//                                  /- shift left
+	//                                  /- shift right
 	//                                  |      /- autopush
-	sm_config_set_in_shift( &isa_bus, false, true, 24);  	                     
+	sm_config_set_in_shift( &isa_bus, false, true, 32);
 	//                                  /- shift right
 	//                                  |     /- autopull
 	sm_config_set_out_shift(&isa_bus, true, true, 8);

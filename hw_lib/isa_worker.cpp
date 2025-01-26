@@ -165,10 +165,10 @@ struct Device_int
 };
 
 
-constexpr uint32_t MEM_RD = (1<<(20+8+3-8));
-constexpr uint32_t MEM_WR = (1<<(20+8+2-8));
-constexpr uint32_t IO_RD = (1<<(20+8+1-8));
-constexpr uint32_t IO_WR = (1<<(20+8+0-8));
+constexpr uint32_t MEM_RD = (1<<(20+3));
+constexpr uint32_t MEM_WR = (1<<(20+2));
+constexpr uint32_t IO_RD = (1<<(20+1));
+constexpr uint32_t IO_WR = (1<<(20+0));
 
 
 std::array<Device_int,4> devices_mem = {};
