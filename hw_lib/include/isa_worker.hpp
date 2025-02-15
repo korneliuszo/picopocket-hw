@@ -11,6 +11,7 @@
 
 void ISA_Pre_Init();
 void ISA_Init();
+void ISA_TC_Init();
 
 extern std::atomic<bool> wait_for_flash;
 

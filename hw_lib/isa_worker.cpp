@@ -145,14 +145,17 @@ uint8_t __not_in_flash_func(DMA_RX_get)()
 	return pio_sm_get(pio0,1);
 }
 
-void ISA_Init()
+void ISA_TC_Init()
 {
 	//TC line
 	gpio_init(TC_PIN);
 	gpio_set_irq_enabled(TC_PIN, GPIO_IRQ_EDGE_RISE, true);
 	gpio_add_raw_irq_handler_masked((1<<TC_PIN), TC_trigger_IRQ);
 	irq_set_enabled(IO_IRQ_BANK0, true);
+}
 
+void ISA_Init()
+{
 	initialize_isa_pio(pio0);
 }
 
@@ -171,8 +174,8 @@ constexpr uint32_t IO_RD = (1<<(20+1));
 constexpr uint32_t IO_WR = (1<<(20+0));
 
 
-std::array<Device_int,4> devices_mem = {};
-std::array<Device_int,4> devices_io = {};
+std::array<Device_int,10> devices_mem = {};
+std::array<Device_int,10> devices_io = {};
 
 std::atomic<bool> wait_for_flash;
 

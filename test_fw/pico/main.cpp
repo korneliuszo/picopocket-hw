@@ -44,6 +44,7 @@ int main(void)
 #ifndef PICOPOCKET_SIM
 	tusb_init();
 #endif
+	ISA_TC_Init();
 	ISA_Init();
 
 #ifndef PICOPOCKET_SIM
