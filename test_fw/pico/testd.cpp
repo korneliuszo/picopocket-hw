@@ -91,7 +91,7 @@ constexpr size_t rx_banner_size = 7*80*2;
 static void testd_task(Thread * thread)
 {
 	add_device({
-					.start = 0xDC000,
+					.start = 0xE8000,
 					.size = (uint32_t)(size_t)(_binary_optionrom_bin_end-_binary_optionrom_bin_start),
 					.type = Device::Type::MEM,
 					.rdfn = read_fn,

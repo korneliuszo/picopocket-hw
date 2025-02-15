@@ -9,7 +9,7 @@
 _TEXT  segment word public 'CODE'
 assume  cs:_TEXT
 dw 0AA55h
-db 16
+db 8
 public entry
 entry:
 	jmp short install_irq
