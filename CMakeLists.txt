@@ -11,7 +11,7 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 
 project(hw_lib C CXX ASM)
 set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards ${PICO_BOARD_HEADER_DIRS})
-if(NOT ${PICO_BOARD})
+if("${PICO_BOARD}" STREQUAL "")
  set(PICO_BOARD board)
 endif()
 
