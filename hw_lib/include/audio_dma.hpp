@@ -39,23 +39,25 @@ class AudioDMA_Impl {
 
 	static inline uint pio_sm;
 
-
 	AudioDMA_Impl() = delete;
-public:
 
+public:
 	static constexpr size_t DMA_BYTE_LEN = 64;
+private:
 
 	static inline int ping_dma_chan;
 	static inline int pong_dma_chan;
+	static inline uint program_offset;
 
 	static void init()
 	{
 		volatile PIO pio = PIO_Selector::PIOPort<PION>();
 		pio_sm = pio_claim_unused_sm(pio,true);
+		program_offset = pio_add_program(pio, &audio_i2s_program);
 		audio_i2s_program_init(
 				pio,
 				pio_sm,
-				pio_add_program(pio, &audio_i2s_program),
+				program_offset,
 				PIN_DIN,
 				PIN_BCK);
 	    ping_dma_chan = dma_claim_unused_channel(true);
@@ -65,6 +67,15 @@ public:
 	    pio_gpio_init(pio, PIN_BCK);
 	    pio_gpio_init(pio, PIN_LRCK);
 
+	}
+
+	static void deinit()
+	{
+		volatile PIO pio = PIO_Selector::PIOPort<PION>();
+		pio_sm_set_enabled(pio,pio_sm,0);
+		dma_channel_unclaim(ping_dma_chan);
+		dma_channel_unclaim(pong_dma_chan);
+		pio_remove_program(pio,&audio_i2s_program,program_offset);
 	}
 
 	static void update_pio_frequency(uint32_t sample_freq) {
@@ -135,7 +146,9 @@ public:
 	static inline std::atomic<bool> stopping; //isr context
 	static inline std::atomic<bool> stopped; //isr context
 
+public:
 	static inline volatile uint32_t isr_time_taken = 0xffffffff;
+private:
 
 	template<const int16_t* (*get_buff)(size_t req_buff)>
 	static void __not_in_flash_func(isr)()
@@ -152,6 +165,7 @@ public:
 			    irq_set_enabled(DMA_IRQ_0+IRQN, false);
 				irq_remove_handler(DMA_IRQ_0+IRQN,&isr<get_buff>);
 				stopped = true;
+				deinit();
 				return;
 			}
 			const int16_t* buff = get_buff(DMA_BYTE_LEN);
@@ -192,6 +206,7 @@ public:
 		//isr_time_taken = std::min(systick_hw->cvr,isr_time_taken);
 		isr_time_taken = systick_hw->cvr;
 	}
+public:
 
 	class Single_playback
 	{
@@ -213,6 +228,7 @@ public:
 	public:
 		static void init_playback(const uint32_t sample_rate, const int16_t * _buff, const size_t byte_len)
 		{
+			init();
 			buff = _buff;
 			rem_len = byte_len;
 			update_pio_frequency(sample_rate);
@@ -250,6 +266,7 @@ public:
 	public:
 		static void init_playback(const uint32_t sample_rate)
 		{
+			init();
 			update_pio_frequency(sample_rate);
 			stopped = false;
 			const int16_t* ibuff = get_buff(DMA_BYTE_LEN);
@@ -275,6 +292,32 @@ public:
 		static bool is_complete()
 		{
 			return stopped;
+		}
+	};
+
+	template<const volatile uint32_t* static_out>
+	class Static_Playback {
+	public:
+		static void init_playback(const uint32_t sample_rate)
+		{
+			init();
+			update_pio_frequency(sample_rate);
+			stopped = false;
+			setup_dma_const(
+					ping_dma_chan,
+					pong_dma_chan,
+					const_cast<uint32_t*>(static_out)
+					);
+			dma_channel_start(ping_dma_chan);
+
+		}
+		static void stop()
+		{
+			dma_channel_abort(ping_dma_chan);
+			dma_channel_abort(pong_dma_chan);
+			dma_channel_abort(ping_dma_chan);
+			deinit();
+			stopped=true;
 		}
 	};
 };
