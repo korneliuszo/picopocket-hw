@@ -135,6 +135,11 @@ void DMA_RX_Setup()
 	initialize_dma_wr_pio(pio0);
 }
 
+void DMA_TX_Setup()
+{
+	initialize_dma_rd_pio(pio0);
+}
+
 bool __not_in_flash_func(DMA_RX_is_ready)()
 {
 	return ! pio_sm_is_rx_fifo_empty(pio0,1);
@@ -143,6 +148,11 @@ bool __not_in_flash_func(DMA_RX_is_ready)()
 uint8_t __not_in_flash_func(DMA_RX_get)()
 {
 	return pio_sm_get(pio0,1);
+}
+
+void __not_in_flash_func(DMA_TX_put)(uint8_t val)
+{
+	pio_sm_put(pio0,1,val);
 }
 
 void ISA_TC_Init()

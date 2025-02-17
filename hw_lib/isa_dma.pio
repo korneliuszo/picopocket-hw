@@ -201,7 +201,7 @@ static inline void initialize_dma_rd_pio(PIO isa_pio)
 	pio_sm_config dma_helper = dma_helper_rd_program_get_default_config(dma_helper_rd_offset);
 	
 	sm_config_set_clkdiv_int_frac(&dma_helper, intdiv,0);
-	sm_config_set_out_shift(&dma_helper, false, false /* autopull */, 8);
+	sm_config_set_out_shift(&dma_helper, true, false /* autopull */, 8);
 	sm_config_set_out_pins(&dma_helper, PIN_AD0, 8);
 	sm_config_set_fifo_join(&dma_helper,PIO_FIFO_JOIN_TX);
 		
