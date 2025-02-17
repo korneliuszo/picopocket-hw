@@ -26,6 +26,5 @@ wait_for_tx:
 PUBLIC entry:
 	nop                    side 0b01 [1]
 	out y,32           ;no side
-	out x,32           ;no side
-	nop                    side 0b00    ;t_CSP start
+	out x,32               side 0b00    ;t_CSP start
 .wrap
