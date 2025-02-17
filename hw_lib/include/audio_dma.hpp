@@ -66,13 +66,13 @@ private:
 	    pio_gpio_init(pio, PIN_DIN);
 	    pio_gpio_init(pio, PIN_BCK);
 	    pio_gpio_init(pio, PIN_LRCK);
-
 	}
 
 	static void deinit()
 	{
 		volatile PIO pio = PIO_Selector::PIOPort<PION>();
 		pio_sm_set_enabled(pio,pio_sm,0);
+		pio_sm_unclaim(pio,pio_sm);
 		dma_channel_unclaim(ping_dma_chan);
 		dma_channel_unclaim(pong_dma_chan);
 		pio_remove_program(pio,&audio_i2s_program,program_offset);
@@ -188,6 +188,7 @@ private:
 			    irq_set_enabled(DMA_IRQ_0+IRQN, false);
 				irq_remove_handler(DMA_IRQ_0+IRQN,&isr<get_buff>);
 				stopped = true;
+				deinit();
 				return;
 			}
 			const int16_t* buff = get_buff(DMA_BYTE_LEN);
