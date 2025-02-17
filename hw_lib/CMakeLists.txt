@@ -29,5 +29,6 @@ target_link_libraries(ar1021_pio INTERFACE hardware_pio hardware_clocks)
 
 add_library(audio_dma INTERFACE)
 pico_generate_pio_header(audio_dma ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio)
+pico_generate_pio_header(audio_dma ${CMAKE_CURRENT_LIST_DIR}/apdm.pio)
 target_include_directories(audio_dma INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_libraries(audio_dma INTERFACE hardware_pio hardware_clocks hardware_dma)

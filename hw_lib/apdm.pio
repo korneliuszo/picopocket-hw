@@ -1,0 +1,41 @@
+
+.program apdm_input
+
+; O[n]=T1-T2-C             ;   main loop
+out_loop:
+	mov x, ~x              ;       |
+	mov y,~status          ;       |
+	jmp !y no_out          ;       |
+	in x,32                ;
+	out x,32               ;
+no_out:
+loop:
+	jmp x-- nop1           ;       | <-\
+nop1:
+	jmp pin loop           ;       | ->/
+	mov x, ~x           [2];       |
+.wrap_target               ;         <-\
+	jmp x-- nop2           ;       |
+nop2:
+	jmp pin out_loop       ;       |
+.wrap                      ;         ->/
+
+
+% c-sdk {
+
+static inline void apdm_input_program_init(PIO pio, uint sm, uint offset, uint data_pin) {
+    pio_sm_set_consecutive_pindirs(pio, sm, data_pin, 1, false);
+
+    pio_sm_config c = apdm_input_program_get_default_config(offset);
+    
+    sm_config_set_jmp_pin(&c, data_pin);
+
+    pio_gpio_init(pio, data_pin);
+    
+    sm_config_set_in_shift(&c, true, true, 1);
+    sm_config_set_out_shift(&c, false, true, 32);
+	sm_config_set_mov_status(&c,STATUS_TX_LESSTHAN , 1);
+ 
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}

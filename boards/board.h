@@ -26,8 +26,10 @@
 #define AUDIO_DIN 16
 #define AUDIO_BCK 17
 #define AUDIO_LRCK 18
+#define AUDIO_PDM 10
 #define AUDIO_PIO 1
 #define AUDIO_DMA_IRQN 0
+#define AUDIO_PIO_IRQN 0
 
 #define CYW43_PIO_CLOCK_DIV 3
 
