@@ -160,6 +160,11 @@ void __not_in_flash_func(DMA_TX_put)(uint8_t val)
 	pio_sm_put(pio0,1,val);
 }
 
+uint __not_in_flash_func(DMA_TX_ready_data)()
+{
+	return 8-pio_sm_get_tx_fifo_level(pio0,1);
+}
+
 void ISA_TC_Init()
 {
 	//TC line
