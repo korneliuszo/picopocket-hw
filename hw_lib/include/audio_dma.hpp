@@ -36,14 +36,12 @@ namespace PIO_Selector{
 template <uint PIN_DIN,uint PIN_BCK,uint PIN_LRCK, uint PION, uint IRQN>
 class AudioDMA_Impl {
 	static_assert(PIN_BCK + 1 == PIN_LRCK);
-
+public:
 	static inline uint pio_sm;
 
 	AudioDMA_Impl() = delete;
 
-public:
 	static constexpr size_t DMA_BYTE_LEN = 64;
-private:
 
 	static inline int ping_dma_chan;
 	static inline int pong_dma_chan;
@@ -87,7 +85,7 @@ private:
 	    assert(divider < 0x1000000);
 	    pio_sm_set_clkdiv_int_frac(pio, pio_sm, divider >> 8u, divider & 0xffu);
 	}
-
+private:
 	static void setup_dma_cont(const int16_t* buff, int dma_chan, int next_dma_chan)
 	{
 		volatile PIO pio = PIO_Selector::PIOPort<PION>();

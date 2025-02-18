@@ -47,6 +47,7 @@ bool TC_Triggered();
 void DMA_RX_Setup();
 void DMA_TX_Setup();
 bool DMA_RX_is_ready();
+uint DMA_RX_ready_data();
 uint8_t DMA_RX_get();
 void DMA_TX_put(uint8_t val);
 

@@ -145,6 +145,11 @@ bool __not_in_flash_func(DMA_RX_is_ready)()
 	return ! pio_sm_is_rx_fifo_empty(pio0,1);
 }
 
+uint __not_in_flash_func(DMA_RX_ready_data)()
+{
+	return pio_sm_get_rx_fifo_level(pio0,1);
+}
+
 uint8_t __not_in_flash_func(DMA_RX_get)()
 {
 	return pio_sm_get(pio0,1);
