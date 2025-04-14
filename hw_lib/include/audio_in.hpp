@@ -37,8 +37,6 @@ namespace PIO_Selector{
 template <uint PIN_PDM, uint PION, uint IRQN>
 class AudioIn_Impl {
 
-	static inline uint pio_sm;
-
 	AudioIn_Impl() = delete;
 
 	static inline int tick_dma_chan;
@@ -69,6 +67,8 @@ class AudioIn_Impl {
 		pio_remove_program(pio,&apdm_input_program,program_offset);
 	}
 public:
+
+	static inline uint pio_sm;
 
 	class Read_by_call{
 		Read_by_call() = delete;
