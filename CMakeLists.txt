@@ -4,16 +4,17 @@ cmake_minimum_required(VERSION 3.16)
 
 option(PICOPOCKET_SIM "use simulation" FALSE)
 
-if(NOT PICOPOCKET_SIM)
-include(${CMAKE_CURRENT_LIST_DIR}/pico-sdk/pico_sdk_init.cmake)
-
 set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 
-project(hw_lib C CXX ASM)
-set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards ${PICO_BOARD_HEADER_DIRS})
+set(PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards)
 if("${PICO_BOARD}" STREQUAL "")
  set(PICO_BOARD board)
 endif()
+
+if(NOT PICOPOCKET_SIM)
+include(${CMAKE_CURRENT_LIST_DIR}/pico-sdk/pico_sdk_init.cmake)
+
+project(hw_lib C CXX ASM)
 
 set(PICO_CYW43_SUPPORTED "1")
 pico_register_common_scope_var(PICO_CYW43_SUPPORTED)
